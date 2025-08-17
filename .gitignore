@@ -1,0 +1,22 @@
+# Firebase-specific files
+.firebase/
+
+# Node.js dependencies
+node_modules/
+
+# Environment variables
+.env
+
+# IDE files
+.vscode/
+.idea/
+
+# Log files
+*.log
+npm-debug.log*
+firebase-debug.log*
+firebase-debug.*.log*
+
+# Operating System Files
+.DS_Store
+Thumbs.db
