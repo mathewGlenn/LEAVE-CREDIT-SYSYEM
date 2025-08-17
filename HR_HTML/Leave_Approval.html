@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LCMS - Leave Approval</title>
+    <link rel="stylesheet" href="../CSS/Leave.css">
+            <link rel="stylesheet" href="../CSS/sidebar.css">
+
+        <!-- Load sidebar script -->
+    <script src="../components/sidebar-loader.js"></script>
+    <script>
+        // Call the loadSidebar function when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSidebar('hr');
+        });
+    </script>
+</head>
+<body>
+    <div id="sidebar-placeholder"></div>
+
+    <div class="main-content">
+        <div class="leave-container">
+            <div class="leave-title">LEAVE APPLICATION</div>
+            <table class="leave-table">
+                <thead>
+                    <tr>
+                        <th>NAME</th>
+                        <th>TYPE OF LEAVE</th>
+                        <th>DAYS</th>
+                        <th>LEAVE DETAIL</th>
+                        <th>START DATE</th>
+                        <th>STATUS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>John Doe</td>
+                        <td>Vacation Leave</td>
+                        <td>5</td>
+                        <td>Annual vacation</td>
+                        <td>2025-06-01</td>
+                        <td>Pending</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="action-buttons">
+                <button class="approve-btn">APPROVE</button>
+                <button class="disapprove-btn">DISAPPROVE</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

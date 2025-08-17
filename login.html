@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - LCMS</title>
+    <link rel="stylesheet" href="CSS/index.css">    
+</head>
+<body>
+    <div class="container">
+        <div class="login-card" id="loginCard">
+            <div class="image-section" id="roleImage"></div>
+            <div class="login-form" id="roleForm">
+                <h2 id="roleTitle"></h2>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    <button type="submit" class="login-btn">Login</button>
+                    <div class="back-link">
+                        <a href="index.html">Back to role selection</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get role from URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const role = urlParams.get('role');
+        
+        // Set page elements based on role
+        const roleTitle = document.getElementById('roleTitle');
+        const roleImage = document.getElementById('roleImage');
+        const loginForm = document.getElementById('loginForm');
+        
+        if (role === 'hr') {
+            document.title = "HR Login - LCMS";
+            roleTitle.innerText = "HR";
+            roleImage.className = "image-section hr-image";
+            loginForm.action = "#"; // For now, just redirect
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                window.location.href = "HR_HTML/HR.html";
+            });
+        } else if (role === 'supervisor') {
+            document.title = "Supervisor Login - LCMS";
+            roleTitle.innerText = "Supervisor";
+            roleImage.className = "image-section supervisor-image";
+            loginForm.action = "#";
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                window.location.href = "SUPERVISOR_HTML/Supervisor.html";
+            });
+        } else if (role === 'employee') {
+            document.title = "Employee Login - LCMS";
+            roleTitle.innerText = "Employee";
+            roleImage.className = "image-section employee-image";
+            loginForm.action = "#";
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                window.location.href = "EMPLOYEE_HTML/employee html.html";
+            });
+        } else {
+            // If no role is specified, redirect back to index
+            window.location.href = "index.html";
+        }
+    </script>
+</body>
+</html>

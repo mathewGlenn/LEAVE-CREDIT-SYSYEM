@@ -1,0 +1,185 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #e6f3f5;
+    display: flex;
+}
+
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .leave-form {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 17px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: 1200px; /* Increased from max-width: 600px */
+        }
+
+        .form-group {
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            color: #2c3e50;
+            margin-bottom: 12px;
+            font-size: 15px;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        select, input[type="date"], textarea {
+            width: 98%;
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 15px;
+            background-color: #f5f6fa;
+            color: #2c3e50;
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+
+        select:focus, input[type="date"]:focus, textarea:focus {
+            outline: none;
+            border-color: #c7ecee;
+            background-color: #fff;
+        }
+
+        textarea {
+            height: 40px; /* Reduced from 120px */
+            resize: none;
+            width: 98%;
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 15px;
+            background-color: #f5f6fa;
+            color: #2c3e50;
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #c7ecee;
+            background-color: #fff;
+        }
+
+        input[type="number"] {
+            width: 98%;
+            padding: 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 15px;
+            background-color: #f5f6fa;
+            color: #2c3e50;
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+
+        input[type="number"]::-webkit-inner-spin-button, 
+        input[type="number"]::-webkit-outer-spin-button { 
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .submit-btn {
+            background-color: #c7ecee;
+            color: #2c3e50;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 40px auto 0;
+            text-transform: uppercase;
+        }
+
+        .submit-btn:hover {
+            background-color: #a3e4f3;
+            transform: translateY(-2px);
+        }
+
+        /* Add form title */
+        .form-title {
+            font-size: 20px;
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        /* File upload styles */
+        .file-upload {
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .file-upload input[type="file"] {
+            position: absolute;
+            width: 0;
+            height: 0;
+            opacity: 0;
+        }
+
+        .file-upload-btn {
+            display: block;
+            background-color: #f5f6fa;
+            border: 2px dashed #e0e0e0;
+            border-radius: 15px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .file-upload-btn:hover {
+            border-color: #c7ecee;
+            background-color: #fff;
+        }
+
+        .file-upload-btn span {
+            display: block;
+            color: #2c3e50;
+            font-size: 15px;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .file-upload-btn small {
+            color: #95a5a6;
+            font-size: 12px;
+        }
+
+        .file-list {
+            margin-top: 10px;
+        }
+
+        .file-list .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 15px;
+            background-color: #f5f6fa;
+            border-radius: 10px;
+            margin-bottom: 5px;
+        }
+
+        .file-list .file-name {
+            color: #2c3e50;
+            font-size: 14px;
+        }
+
+        .file-list .remove-file {
+            color: #e74c3c;
+            cursor: pointer;
+            font-size: 14px;
+        }

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LCMS - Employee Profile</title>
+    <link rel="stylesheet" href="../CSS/Employee.css">
+    <link rel="stylesheet" href="../CSS/sidebar.css">
+                <!-- Load sidebar script -->
+    <script src="../components/sidebar-loader.js"></script>
+    <script>
+        // Call the loadSidebar function when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSidebar('employee');
+        });
+    </script>
+</head>
+<body>
+    <!-- Sidebar placeholder that will be filled by the JavaScript -->
+    <div id="sidebar-placeholder"></div>
+    <div class="main-content">
+        <form>
+            <div class="form-title">EMPLOYEE PROFILE</div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="firstName">FIRST NAME</label>
+                    <input type="text" id="firstName" name="firstName">
+                </div>
+                <div class="form-group">
+                    <label for="lastName">LAST NAME</label>
+                    <input type="text" id="lastName" name="lastName">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="gender">GENDER</label>
+                    <select id="gender" name="gender">
+                        <option value="" disabled selected>Select Gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="phoneNumber">PHONE NUMBER</label>
+                    <input type="text" id="phoneNumber" name="phoneNumber">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="email">EMAIL ADDRESS</label>
+                <input type="email" id="email" name="email">
+            </div>
+            <div class="form-group">
+                <label for="address">HOME ADDRESS</label>
+                <input type="text" id="address" name="address">
+            </div>
+            <div class="form-group">
+                <label for="designation">DESIGNATION</label>
+                <input type="text" id="designation" name="designation">
+            </div>
+            <div class="form-group">
+                <label for="department">DEPARTMENT UNIT</label>
+                <input type="text" id="department" name="department">
+            </div>
+            <button type="submit" class="save-button">SAVE CHANGES</button>
+        </form>
+    </div>
+</body>
+</html>

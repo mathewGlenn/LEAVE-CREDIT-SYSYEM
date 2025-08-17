@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LCMS - Approved Leaves</title>
+    <link rel="stylesheet" href="../CSS/sidebar.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #e6f3f5;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: linear-gradient(145deg, #8395a7 0%, #576574 100%);
+            height: 100vh;
+            padding: 20px;
+        }
+
+        .logo {
+            color: #2c3e50;
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            padding: 20px;
+        }
+
+        .campus-name {
+            color: #34495e;
+            font-size: 16px;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .menu-item {
+            background-color: rgba(230, 243, 245, 0.9);
+            margin: 10px 0;
+            padding: 12px 20px;
+            border-radius: 20px;
+            color: #2c3e50;
+            text-decoration: none;
+            display: block;
+            transition: all 0.3s ease;
+        }
+
+        .menu-item:hover {
+            background-color: #fff;
+            transform: translateX(10px);
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .approved-container {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: 1200px;
+        }
+
+        .approved-title {
+            background-color: #c7ecee;
+            color: #2c3e50;
+            padding: 15px;
+            text-align: center;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            font-size: 20px;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .approved-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 20px;
+        }
+
+        .approved-table th, 
+        .approved-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .approved-table th {
+            background-color: #f5f6fa;
+            color: #2c3e50;
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 14px;
+        }
+
+        .approved-table td {
+            color: #2c3e50;
+            font-size: 14px;
+        }
+
+        .approved-table tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+            display: inline-block;
+            background-color: #c7ecee;
+            color: #2c3e50;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar placeholder that will be filled by the JavaScript -->
+    <div id="sidebar-placeholder"></div>
+
+    <div class="main-content">
+        <div class="approved-container">
+            <div class="approved-title">APPROVED LEAVES</div>
+            <table class="approved-table">
+                <thead>
+                    <tr>
+                        <th>EMPLOYEE NAME</th>
+                        <th>DEPARTMENT</th>
+                        <th>LEAVE TYPE</th>
+                        <th>START DATE</th>
+                        <th>END DATE</th>
+                        <th>DAYS</th>
+                        <th>REASON</th>
+                        <th>DATE APPROVED</th>
+                        <th>STATUS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>John Doe</td>
+                        <td>IT Department</td>
+                        <td>Vacation Leave</td>
+                        <td>2025-05-15</td>
+                        <td>2025-05-20</td>
+                        <td>5</td>
+                        <td>Annual vacation</td>
+                        <td>2025-05-01</td>
+                        <td><span class="status-badge">Approved</span></td>
+                    </tr>
+                    <tr>
+                        <td>Jane Smith</td>
+                        <td>HR Department</td>
+                        <td>Sick Leave</td>
+                        <td>2025-05-25</td>
+                        <td>2025-05-26</td>
+                        <td>2</td>
+                        <td>Medical checkup</td>
+                        <td>2025-05-10</td>
+                        <td><span class="status-badge">Approved</span></td>
+                    </tr>
+                    <tr>
+                        <td>Mike Johnson</td>
+                        <td>Finance Department</td>
+                        <td>Emergency Leave</td>
+                        <td>2025-06-01</td>
+                        <td>2025-06-02</td>
+                        <td>1</td>
+                        <td>Family emergency</td>
+                        <td>2025-05-31</td>
+                        <td><span class="status-badge">Approved</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Load sidebar script -->
+    <script src="../components/sidebar-loader.js"></script>
+    <script>
+        // Call the loadSidebar function when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSidebar('supervisor');
+        });
+    </script>
+</body>
+</html>

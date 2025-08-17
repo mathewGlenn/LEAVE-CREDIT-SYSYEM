@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LCMS - HR Dashboard</title>
+    <link rel="stylesheet" href="../CSS/HR.css">
+    <link rel="stylesheet" href="../CSS/sidebar.css">
+</head>
+<body>
+    <!-- Sidebar placeholder that will be filled by the JavaScript -->
+    <div id="sidebar-placeholder"></div>
+
+    <div class="main-content">
+        <div class="dashboard-title">HR DASHBOARD</div>
+        
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-number">150</div>
+                <div class="stat-label">Total Employees</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">12</div>
+                <div class="stat-label">On Leave Today</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">8</div>
+                <div class="stat-label">Pending Requests</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">25</div>
+                <div class="stat-label">Leave Balance Updates</div>
+            </div>
+        </div>
+
+        <div class="dashboard-sections">
+            <div class="section-card">
+                <div class="section-title">RECENT LEAVE REQUESTS</div>
+                <ul class="quick-list">
+                    <li>
+                        John Doe - Vacation Leave
+                        <span class="badge badge-pending">Pending</span>
+                    </li>
+                    <li>
+                        Jane Smith - Sick Leave
+                        <span class="badge badge-pending">Pending</span>
+                    </li>
+                    <li>
+                        Mike Johnson - Emergency Leave
+                        <span class="badge badge-pending">Pending</span>
+                    </li>
+                    <li>
+                        Sarah Wilson - Personal Leave
+                        <span class="badge badge-pending">Pending</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="section-card">
+                <div class="section-title">CURRENTLY ON LEAVE</div>
+                <ul class="quick-list">
+                    <li>
+                        Alex Brown - IT Department
+                        <span class="badge badge-active">Until Jun 7</span>
+                    </li>
+                    <li>
+                        Emma Davis - HR Department
+                        <span class="badge badge-active">Until Jun 6</span>
+                    </li>
+                    <li>
+                        Tom Wilson - Finance
+                        <span class="badge badge-active">Until Jun 5</span>
+                    </li>
+                    <li>
+                        Lisa Johnson - Marketing
+                        <span class="badge badge-active">Until Jun 8</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Load sidebar script -->
+    <script src="../components/sidebar-loader.js"></script>
+    <script>
+        // Call the loadSidebar function when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSidebar('hr');
+        });
+    </script>
+</body>
+</html>

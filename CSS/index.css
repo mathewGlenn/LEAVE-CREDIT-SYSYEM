@@ -1,0 +1,144 @@
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f2f5;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            width: 100%;
+            padding: 0 20px;
+            flex-wrap: wrap;
+        }
+        .welcome-container {
+            text-align: center;
+            padding: 40px;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            width: 100%;
+        }
+        .welcome-title {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .welcome-subtitle {
+            color: #576574;
+            font-size: 18px;
+            margin-bottom: 40px;
+        }
+        .role-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            width: 100%;
+        }
+        .role-btn {
+            padding: 15px 30px;
+            font-size: 18px;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.3s, background-color 0.3s;
+        }
+        .role-btn:hover {
+            transform: translateY(-3px);
+        }
+        .hr-btn { background-color: #28a745; }
+        .hr-btn:hover { background-color: #218838; }
+        .supervisor-btn { background-color: #17a2b8; }
+        .supervisor-btn:hover { background-color: #138496; }
+        .employee-btn { background-color: #dc3545; }
+        .employee-btn:hover { background-color: #c82333; }
+
+        .login-card {
+            width: 400px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .image-section {
+            width: 100%;
+            height: 200px;
+            background-size: cover;
+            background-position: center;
+        }
+        .hr-image { 
+            background-image: url('https://images.unsplash.com/photo-1497215728101-856f4ea42174'); /* Office HR workspace */
+        }
+        .supervisor-image { 
+            background-image: url('https://images.unsplash.com/photo-1542744173-8e7e53415bb0'); /* Team meeting/supervision */
+        }
+        .employee-image { 
+            background-image: url('https://images.unsplash.com/photo-1522071820081-009f0129c71c'); /* Office workers */
+        }
+        
+        .login-form {
+            flex: 1;
+            padding: 20px;
+        }
+        .login-form h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .login-btn {
+            width: 100%;
+            padding: 10px;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        .hr-form .login-btn { background-color: #28a745; }
+        .hr-form .login-btn:hover { background-color: #218838; }
+        .supervisor-form .login-btn { background-color: #17a2b8; }
+        .supervisor-form .login-btn:hover { background-color: #138496; }
+        .employee-form .login-btn { background-color: #dc3545; }
+        .employee-form .login-btn:hover { background-color: #c82333; }
+        
+        .back-link {
+            margin-top: 15px;
+            text-align: center;
+        }
+        
+        .back-link a {
+            color: #17a2b8;
+            text-decoration: none;
+        }
+        
+        .back-link a:hover {
+            text-decoration: underline;
+        }

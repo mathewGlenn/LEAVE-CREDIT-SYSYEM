@@ -1,0 +1,70 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #e6f3f5;
+    display: flex;
+}
+
+        .main-content {
+            flex: 1;
+            padding: 30px;
+        }
+
+        .leave-container {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .leave-title {
+            background-color: #c7ecee;
+            color: #2c3e50;
+            padding: 15px;
+            text-align: center;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        .leave-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-bottom: 20px;
+        }
+
+        .leave-table th, .leave-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .leave-table th {
+            background-color: #f5f6fa;
+            color: #2c3e50;
+        }
+
+        .action-buttons {
+            text-align: right;
+        }
+
+        .approve-btn, .disapprove-btn {
+            padding: 8px 20px;
+            margin-left: 10px;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .approve-btn {
+            background-color: #c7ecee;
+            color: #2c3e50;
+        }
+
+        .disapprove-btn {
+            background-color: #ff7675;
+            color: white;
+        }

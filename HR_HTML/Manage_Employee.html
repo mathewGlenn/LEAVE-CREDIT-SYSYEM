@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LCMS - Manage Employee</title>
+    <link rel="stylesheet" href="../CSS/Manage.css">
+
+            <link rel="stylesheet" href="../CSS/sidebar.css">
+        <!-- Load sidebar script -->
+    <script src="../components/sidebar-loader.js"></script>
+    <script>
+        // Call the loadSidebar function when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSidebar('hr');
+        });
+    </script>
+</head>
+<body>
+    <div id="sidebar-placeholder"></div>
+    <div class="main-content">
+        <div class="employee-list-container">
+            <div class="section-title">EMPLOYEE LIST</div>
+            <table id="employee-list">
+                <thead>
+                    <tr>
+                        <th>NAME</th>
+                        <th>DEPARTMENT</th>
+                        <th>DESIGNATION</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="employee-row" data-name="FREMA MIA C. GASPAR" data-gender="FEMALE" data-phone="09120562435" data-address="SAMPALOC, CABATUAN, ISABELA" data-department="BSIT" data-designation="PROFESSOR" data-leave='[{"title":"Regular Leave","days":12,"used":8,"remaining":4},{"title":"Maternity Leave","days":105,"used":0,"remaining":105},{"title":"Sick Leave","days":5,"used":3,"remaining":2}]' data-history='[{"date":"01/08/25","type":"Regular Leave","from":"01/12/25","to":"01/14/25","total":2,"notes":""},{"date":"03/15/25","type":"Regular Leave","from":"02/28/25","to":"04/03/25","total":6,"notes":"Family outing"},{"date":"05/15/25","type":"Sick Leave","from":"05/15/25","to":"05/17/25","total":3,"notes":""}]'>
+                        <td>FREMA MIA C. GASPAR</td>
+                        <td>BSIT</td>
+                        <td>PROFESSOR</td>
+                    </tr>
+                    <!-- Add more employee rows here as needed -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Employee Details Modal -->
+        <div id="employee-modal" class="modal" style="display:none;">
+            <div class="modal-content">
+                <span class="close-btn" id="close-modal" style="float:right;cursor:pointer;">&times;</span>
+                <div class="profile-container">
+                    <div class="section-title">EMPLOYEE'S PROFILE</div>
+                    <div class="profile-details" id="modal-profile-details">
+                        <!-- Filled by JS -->
+                    </div>
+                </div>
+                <div class="profile-container">
+                    <div class="section-title">LEAVE CREDIT BALANCE</div>
+                    <table id="modal-leave-table">
+                        <thead>
+                            <tr>
+                                <th>TITLE</th>
+                                <th>DAYS</th>
+                                <th>USED</th>
+                                <th>REMAINING</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Filled by JS -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="profile-container">
+                    <div class="section-title">LEAVE TRANSACTION HISTORY</div>
+                    <table id="modal-history-table">
+                        <thead>
+                            <tr>
+                                <th>DATE</th>
+                                <th>TYPE OF LEAVE</th>
+                                <th>FROM</th>
+                                <th>TO</th>
+                                <th>TOTAL</th>
+                                <th>REASON/NOTES</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Filled by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    document.querySelectorAll('.employee-row').forEach(function(row) {
+        row.addEventListener('click', function() {
+            // Profile
+            document.getElementById('modal-profile-details').innerHTML = `
+                <div class="detail-item">NAME: ${row.dataset.name}</div>
+                <div class="detail-item">GENDER: ${row.dataset.gender}</div>
+                <div class="detail-item">PHONE NUMBER: ${row.dataset.phone}</div>
+                <div class="detail-item">HOME ADDRESS: ${row.dataset.address}</div>
+                <div class="detail-item">DEPARTMENT UNIT: ${row.dataset.department}</div>
+                <div class="detail-item">DESIGNATION: ${row.dataset.designation}</div>
+            `;
+            // Leave Credit
+            let leave = JSON.parse(row.dataset.leave);
+            let leaveRows = leave.map(l => `<tr>
+                <td>${l.title}</td>
+                <td>${l.days}</td>
+                <td>${l.used}</td>
+                <td>${l.remaining}</td>
+            </tr>`).join('');
+            document.querySelector('#modal-leave-table tbody').innerHTML = leaveRows;
+            // History
+            let history = JSON.parse(row.dataset.history);
+            let historyRows = history.map(h => `<tr>
+                <td>${h.date}</td>
+                <td>${h.type}</td>
+                <td>${h.from}</td>
+                <td>${h.to}</td>
+                <td>${h.total}</td>
+                <td>${h.notes}</td>
+            </tr>`).join('');
+            document.querySelector('#modal-history-table tbody').innerHTML = historyRows;
+            // Show modal
+            document.getElementById('employee-modal').style.display = 'block';
+        });
+    });
+    document.getElementById('close-modal').onclick = function() {
+        document.getElementById('employee-modal').style.display = 'none';
+    };
+    window.onclick = function(event) {
+        var modal = document.getElementById('employee-modal');
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    };
+    </script>
+</body>
+</html>

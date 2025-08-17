@@ -1,0 +1,31 @@
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LCMS - Leave Credit Management System</title>
+    <link rel="stylesheet" href="CSS/index.css">    
+</head>
+<body>
+    <div class="container">
+        <div class="welcome-container">
+            <h1 class="welcome-title">Welcome to Leave Credit Management System</h1>
+            <p class="welcome-subtitle">ISU CAUAYAN CAMPUS</p>
+            <div class="role-buttons">
+                <button class="role-btn hr-btn" onclick="redirectToLogin('hr')">HR</button>
+                <button class="role-btn supervisor-btn" onclick="redirectToLogin('supervisor')">Supervisor</button>
+                <button class="role-btn employee-btn" onclick="redirectToLogin('employee')">Employee</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function redirectToLogin(role) {
+            window.location.href = `login.html?role=${role}`;
+        }
+    </script>
+</body>
+</html>

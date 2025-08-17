@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LCMS - Leave History</title>
+    <link rel="stylesheet" href="../CSS/Leave_history.css">
+            <link rel="stylesheet" href="../CSS/sidebar.css">
+
+            <!-- Load sidebar script -->
+    <script src="../components/sidebar-loader.js"></script>
+    <script>
+        // Call the loadSidebar function when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSidebar('employee');
+        });
+    </script>
+</head>
+<body>
+    <div id="sidebar-placeholder"></div>
+
+    <div class="main-content">
+        <div class="status-container">
+            <div class="status-title">LEAVE HISTORY</div>
+            <table class="status-table">
+                <thead>
+                    <tr>
+                        <th>TYPES OF LEAVE</th>
+                        <th>DAYS</th>
+                        <th>LEAVE DETAIL</th>
+                        <th>START DATE</th>
+                        <th>END DATE</th>
+                        <th>STATUS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Vacation Leave</td>
+                        <td>5</td>
+                        <td>Annual vacation</td>
+                        <td>2025-01-15</td>
+                        <td>2025-01-20</td>
+                        <td><span class="status-badge status-completed">Completed</span></td>
+                    </tr>
+                    <tr>
+                        <td>Sick Leave</td>
+                        <td>2</td>
+                        <td>Medical checkup</td>
+                        <td>2025-03-10</td>
+                        <td>2025-03-12</td>
+                        <td><span class="status-badge status-completed">Completed</span></td>
+                    </tr>
+                    <tr>
+                        <td>Emergency Leave</td>
+                        <td>1</td>
+                        <td>Family matter</td>
+                        <td>2025-04-05</td>
+                        <td>2025-04-05</td>
+                        <td><span class="status-badge status-completed">Completed</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
