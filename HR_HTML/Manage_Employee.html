@@ -91,6 +91,43 @@
                                 </select>
                             </div>
                         </div>
+                        
+                        <!-- Leave Credit Balance Section -->
+                        <div class="profile-container" style="margin-top: 20px;">
+                            <div class="section-title collapsible-header" onclick="toggleLeaveCredits()" style="cursor: pointer;">
+                                LEAVE CREDIT BALANCE (Optional - Default values will be used if not specified)
+                                <span id="leave-credits-toggle" class="toggle-icon">▼</span>
+                            </div>
+                            <div id="leave-credits-section" class="leave-credits-content" style="display: none;">
+                                <div class="leave-credits-grid">
+                                    <div class="leave-credit-item">
+                                        <label>Regular Leave:</label>
+                                        <input type="number" id="emp-regular-leave" min="0" max="30" value="15" placeholder="15">
+                                    </div>
+                                    <div class="leave-credit-item">
+                                        <label>Sick Leave:</label>
+                                        <input type="number" id="emp-sick-leave" min="0" max="30" value="10" placeholder="10">
+                                    </div>
+                                    <div class="leave-credit-item">
+                                        <label>Emergency Leave:</label>
+                                        <input type="number" id="emp-emergency-leave" min="0" max="15" value="5" placeholder="5">
+                                    </div>
+                                    <div class="leave-credit-item">
+                                        <label>Maternity/Paternity Leave:</label>
+                                        <input type="number" id="emp-maternity-leave" min="0" max="120" value="60" placeholder="60">
+                                    </div>
+                                    <div class="leave-credit-item">
+                                        <label>Service Incentive Leave:</label>
+                                        <input type="number" id="emp-service-leave" min="0" max="10" value="5" placeholder="5">
+                                    </div>
+                                    <div class="leave-credit-item">
+                                        <label>Special Privilege Leave:</label>
+                                        <input type="number" id="emp-special-leave" min="0" max="10" value="3" placeholder="3">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
                         <div class="form-actions">
                             <button type="submit" class="action-btn save-btn">CREATE EMPLOYEE</button>
                             <button type="button" class="action-btn cancel-btn" onclick="closeAddModal()">CANCEL</button>
@@ -235,6 +272,46 @@
         async function handleAddEmployee(e) {
             e.preventDefault();
             
+            // Get leave credit values or use defaults
+            const leaveCredits = {
+                regularLeave: {
+                    title: "Regular Leave",
+                    days: parseInt(document.getElementById('emp-regular-leave').value) || 15,
+                    used: 0,
+                    remaining: parseInt(document.getElementById('emp-regular-leave').value) || 15
+                },
+                sickLeave: {
+                    title: "Sick Leave", 
+                    days: parseInt(document.getElementById('emp-sick-leave').value) || 10,
+                    used: 0,
+                    remaining: parseInt(document.getElementById('emp-sick-leave').value) || 10
+                },
+                emergencyLeave: {
+                    title: "Emergency Leave",
+                    days: parseInt(document.getElementById('emp-emergency-leave').value) || 5,
+                    used: 0,
+                    remaining: parseInt(document.getElementById('emp-emergency-leave').value) || 5
+                },
+                maternityLeave: {
+                    title: "Maternity/Paternity Leave",
+                    days: parseInt(document.getElementById('emp-maternity-leave').value) || 60,
+                    used: 0,
+                    remaining: parseInt(document.getElementById('emp-maternity-leave').value) || 60
+                },
+                serviceLeave: {
+                    title: "Service Incentive Leave",
+                    days: parseInt(document.getElementById('emp-service-leave').value) || 5,
+                    used: 0,
+                    remaining: parseInt(document.getElementById('emp-service-leave').value) || 5
+                },
+                specialLeave: {
+                    title: "Special Privilege Leave",
+                    days: parseInt(document.getElementById('emp-special-leave').value) || 3,
+                    used: 0,
+                    remaining: parseInt(document.getElementById('emp-special-leave').value) || 3
+                }
+            };
+            
             const formData = {
                 name: document.getElementById('emp-name').value,
                 email: document.getElementById('emp-email').value,
@@ -263,11 +340,12 @@
                     department: formData.department,
                     designation: formData.designation,
                     role: formData.role,
+                    leaveCredits: leaveCredits,
                     createdAt: formData.createdAt,
                     uid: userId
                 });
                 
-                alert('Employee created successfully!');
+                alert('Employee created successfully with leave credits!');
                 closeAddModal();
                 loadEmployees(); // Reload the table
                 
@@ -281,6 +359,23 @@
         function closeAddModal() {
             document.getElementById('add-employee-modal').style.display = 'none';
             document.getElementById('add-employee-form').reset();
+            // Reset leave credits section to collapsed state
+            document.getElementById('leave-credits-section').style.display = 'none';
+            document.getElementById('leave-credits-toggle').textContent = '▼';
+        }
+        
+        // Toggle leave credits section
+        function toggleLeaveCredits() {
+            const section = document.getElementById('leave-credits-section');
+            const toggle = document.getElementById('leave-credits-toggle');
+            
+            if (section.style.display === 'none') {
+                section.style.display = 'block';
+                toggle.textContent = '▲';
+            } else {
+                section.style.display = 'none';
+                toggle.textContent = '▼';
+            }
         }
         
         // Close modals when clicking outside

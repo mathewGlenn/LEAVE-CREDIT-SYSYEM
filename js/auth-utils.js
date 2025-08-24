@@ -19,23 +19,7 @@ function checkAuthAndRole(requiredRole) {
         }
 
         console.log(`User authenticated as ${requiredRole}:`, user.email);
-
-        // Display user info in the sidebar if element exists
-        displayUserInfo(user, userRole);
     });
-}
-
-// Display user information in the sidebar
-function displayUserInfo(user, role) {
-    const userInfoElement = document.getElementById('user-info');
-    if (userInfoElement) {
-        userInfoElement.innerHTML = `
-            <div class="user-details">
-                <div class="user-email">${user.email}</div>
-                <div class="user-role">${role.toUpperCase()}</div>
-            </div>
-        `;
-    }
 }
 
 // Check authentication for pages in the root directory

@@ -48,6 +48,9 @@
                         <!-- Leave balance will be loaded here -->
                     </tbody>
                 </table>
+                <div class="form-actions" style="margin-top: 15px;">
+                    <button id="edit-leave-credits-btn" class="action-btn edit-btn">EDIT LEAVE CREDITS</button>
+                </div>
             </div>
 
             <div class="profile-container">
@@ -128,6 +131,54 @@
                 </div>
             </div>
         </div>
+
+        <!-- Edit Leave Credits Modal -->
+        <div id="edit-leave-credits-modal" class="modal" style="display:none;">
+            <div class="modal-content">
+                <span class="close-btn" onclick="closeLeaveCreditsModal()" style="float:right;cursor:pointer;">&times;</span>
+                <div class="profile-container">
+                    <div class="section-title">EDIT LEAVE CREDITS</div>
+                    <form id="edit-leave-credits-form">
+                        <div class="leave-credits-grid">
+                            <div class="leave-credit-item">
+                                <label>Regular Leave:</label>
+                                <input type="number" id="edit-regular-leave" min="0" max="30" placeholder="15">
+                                <small>Days per year</small>
+                            </div>
+                            <div class="leave-credit-item">
+                                <label>Sick Leave:</label>
+                                <input type="number" id="edit-sick-leave" min="0" max="30" placeholder="10">
+                                <small>Days per year</small>
+                            </div>
+                            <div class="leave-credit-item">
+                                <label>Emergency Leave:</label>
+                                <input type="number" id="edit-emergency-leave" min="0" max="15" placeholder="5">
+                                <small>Days per year</small>
+                            </div>
+                            <div class="leave-credit-item">
+                                <label>Maternity/Paternity Leave:</label>
+                                <input type="number" id="edit-maternity-leave" min="0" max="120" placeholder="60">
+                                <small>Days per year</small>
+                            </div>
+                            <div class="leave-credit-item">
+                                <label>Service Incentive Leave:</label>
+                                <input type="number" id="edit-service-leave" min="0" max="10" placeholder="5">
+                                <small>Days per year</small>
+                            </div>
+                            <div class="leave-credit-item">
+                                <label>Special Privilege Leave:</label>
+                                <input type="number" id="edit-special-leave" min="0" max="10" placeholder="3">
+                                <small>Days per year</small>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="action-btn save-btn">UPDATE LEAVE CREDITS</button>
+                            <button type="button" class="action-btn cancel-btn" onclick="closeLeaveCreditsModal()">CANCEL</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Load scripts -->
@@ -166,6 +217,8 @@
             document.getElementById('edit-btn').addEventListener('click', openEditModal);
             document.getElementById('delete-btn').addEventListener('click', handleDeleteEmployee);
             document.getElementById('edit-employee-form').addEventListener('submit', handleEditEmployee);
+            document.getElementById('edit-leave-credits-btn').addEventListener('click', openLeaveCreditsModal);
+            document.getElementById('edit-leave-credits-form').addEventListener('submit', handleEditLeaveCredits);
         }
         
         // Load employee details
@@ -175,7 +228,7 @@
                     if (doc.exists) {
                         const employee = doc.data();
                         displayEmployeeDetails(employee);
-                        loadLeaveBalance(currentEmployeeId);
+                        loadLeaveBalance(currentEmployeeId, employee);
                         loadLeaveHistory(currentEmployeeId);
                     } else {
                         alert('Employee not found');
@@ -206,26 +259,46 @@
             `;
         }
         
-        // Load leave balance (default values for now)
-        function loadLeaveBalance(employeeId) {
+        // Load leave balance from employee data
+        function loadLeaveBalance(employeeId, employee) {
             const tableBody = document.querySelector('#leave-balance-table tbody');
             
-            // Default leave balance - in a real app, this would come from Firestore
-            const defaultLeave = [
-                {title: "Regular Leave", days: 15, used: 0, remaining: 15},
-                {title: "Sick Leave", days: 10, used: 0, remaining: 10},
-                {title: "Emergency Leave", days: 5, used: 0, remaining: 5},
-                {title: "Maternity/Paternity Leave", days: 60, used: 0, remaining: 60}
-            ];
-            
-            const leaveRows = defaultLeave.map(l => `<tr>
-                <td>${l.title}</td>
-                <td>${l.days}</td>
-                <td>${l.used}</td>
-                <td>${l.remaining}</td>
-            </tr>`).join('');
-            
-            tableBody.innerHTML = leaveRows;
+            // Check if employee has leave credits stored
+            if (employee.leaveCredits) {
+                const leaveCredits = employee.leaveCredits;
+                let leaveRows = '';
+                
+                // Convert leave credits object to array and display
+                Object.values(leaveCredits).forEach(leave => {
+                    leaveRows += `<tr>
+                        <td>${leave.title}</td>
+                        <td>${leave.days}</td>
+                        <td>${leave.used}</td>
+                        <td>${leave.remaining}</td>
+                    </tr>`;
+                });
+                
+                tableBody.innerHTML = leaveRows;
+            } else {
+                // Default leave balance for employees created before leave credits feature
+                const defaultLeave = [
+                    {title: "Regular Leave", days: 15, used: 0, remaining: 15},
+                    {title: "Sick Leave", days: 10, used: 0, remaining: 10},
+                    {title: "Emergency Leave", days: 5, used: 0, remaining: 5},
+                    {title: "Maternity/Paternity Leave", days: 60, used: 0, remaining: 60},
+                    {title: "Service Incentive Leave", days: 5, used: 0, remaining: 5},
+                    {title: "Special Privilege Leave", days: 3, used: 0, remaining: 3}
+                ];
+                
+                const leaveRows = defaultLeave.map(l => `<tr>
+                    <td>${l.title}</td>
+                    <td>${l.days}</td>
+                    <td>${l.used}</td>
+                    <td>${l.remaining}</td>
+                </tr>`).join('');
+                
+                tableBody.innerHTML = leaveRows;
+            }
         }
         
         // Load leave history (empty for now)
@@ -312,6 +385,105 @@
             document.getElementById('edit-employee-modal').style.display = 'none';
         }
         
+        // Open leave credits edit modal
+        function openLeaveCreditsModal() {
+            db.collection('employees').doc(currentEmployeeId).get()
+                .then((doc) => {
+                    if (doc.exists) {
+                        const employee = doc.data();
+                        const leaveCredits = employee.leaveCredits;
+                        
+                        if (leaveCredits) {
+                            // Fill the form with current values
+                            document.getElementById('edit-regular-leave').value = leaveCredits.regularLeave?.days || 15;
+                            document.getElementById('edit-sick-leave').value = leaveCredits.sickLeave?.days || 10;
+                            document.getElementById('edit-emergency-leave').value = leaveCredits.emergencyLeave?.days || 5;
+                            document.getElementById('edit-maternity-leave').value = leaveCredits.maternityLeave?.days || 60;
+                            document.getElementById('edit-service-leave').value = leaveCredits.serviceLeave?.days || 5;
+                            document.getElementById('edit-special-leave').value = leaveCredits.specialLeave?.days || 3;
+                        } else {
+                            // Set default values
+                            document.getElementById('edit-regular-leave').value = 15;
+                            document.getElementById('edit-sick-leave').value = 10;
+                            document.getElementById('edit-emergency-leave').value = 5;
+                            document.getElementById('edit-maternity-leave').value = 60;
+                            document.getElementById('edit-service-leave').value = 5;
+                            document.getElementById('edit-special-leave').value = 3;
+                        }
+                        
+                        document.getElementById('edit-leave-credits-modal').style.display = 'block';
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error getting employee data:", error);
+                    alert('Error loading leave credits data');
+                });
+        }
+        
+        // Handle edit leave credits form submission
+        async function handleEditLeaveCredits(e) {
+            e.preventDefault();
+            
+            const updatedLeaveCredits = {
+                regularLeave: {
+                    title: "Regular Leave",
+                    days: parseInt(document.getElementById('edit-regular-leave').value),
+                    used: 0,
+                    remaining: parseInt(document.getElementById('edit-regular-leave').value)
+                },
+                sickLeave: {
+                    title: "Sick Leave",
+                    days: parseInt(document.getElementById('edit-sick-leave').value),
+                    used: 0,
+                    remaining: parseInt(document.getElementById('edit-sick-leave').value)
+                },
+                emergencyLeave: {
+                    title: "Emergency Leave",
+                    days: parseInt(document.getElementById('edit-emergency-leave').value),
+                    used: 0,
+                    remaining: parseInt(document.getElementById('edit-emergency-leave').value)
+                },
+                maternityLeave: {
+                    title: "Maternity/Paternity Leave",
+                    days: parseInt(document.getElementById('edit-maternity-leave').value),
+                    used: 0,
+                    remaining: parseInt(document.getElementById('edit-maternity-leave').value)
+                },
+                serviceLeave: {
+                    title: "Service Incentive Leave",
+                    days: parseInt(document.getElementById('edit-service-leave').value),
+                    used: 0,
+                    remaining: parseInt(document.getElementById('edit-service-leave').value)
+                },
+                specialLeave: {
+                    title: "Special Privilege Leave",
+                    days: parseInt(document.getElementById('edit-special-leave').value),
+                    used: 0,
+                    remaining: parseInt(document.getElementById('edit-special-leave').value)
+                }
+            };
+            
+            try {
+                await db.collection('employees').doc(currentEmployeeId).update({
+                    leaveCredits: updatedLeaveCredits,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                alert('Leave credits updated successfully!');
+                closeLeaveCreditsModal();
+                loadEmployeeDetails(); // Reload the details
+                
+            } catch (error) {
+                console.error("Error updating leave credits:", error);
+                alert('Error updating leave credits: ' + error.message);
+            }
+        }
+        
+        // Close leave credits modal
+        function closeLeaveCreditsModal() {
+            document.getElementById('edit-leave-credits-modal').style.display = 'none';
+        }
+        
         // Go back to manage employees page
         function goBack() {
             window.location.href = 'Manage_Employee.html';
@@ -320,8 +492,12 @@
         // Close modal when clicking outside
         window.onclick = function(event) {
             const editModal = document.getElementById('edit-employee-modal');
+            const leaveCreditsModal = document.getElementById('edit-leave-credits-modal');
+            
             if (event.target == editModal) {
                 closeEditModal();
+            } else if (event.target == leaveCreditsModal) {
+                closeLeaveCreditsModal();
             }
         };
     </script>
