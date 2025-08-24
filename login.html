@@ -4,7 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - LCMS</title>
-    <link rel="stylesheet" href="CSS/index.css">    
+    <link rel="stylesheet" href="CSS/index.css">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 </head>
 <body>
     <div class="container">
@@ -14,14 +18,16 @@
                 <h2 id="roleTitle"></h2>
                 <form id="loginForm">
                     <div class="form-group">
-                        <label for="username">Username</label>
-                        <input type="text" id="username" name="username" required>
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required>
                     </div>
                     <div class="form-group">
                         <label for="password">Password</label>
                         <input type="password" id="password" name="password" required>
                     </div>
-                    <button type="submit" class="login-btn">Login</button>
+                    <div id="errorMessage" class="error-message" style="display: none;"></div>
+                    <div id="loadingMessage" class="loading-message" style="display: none;">Signing in...</div>
+                    <button type="submit" class="login-btn" id="loginButton">Login</button>
                     <div class="back-link">
                         <a href="index.html">Back to role selection</a>
                     </div>
@@ -30,46 +36,112 @@
         </div>
     </div>
 
+    <!-- Firebase Initialization -->
+    <script src="js/firebase-init.js"></script>
+    
     <script>
         // Get role from URL parameter
         const urlParams = new URLSearchParams(window.location.search);
         const role = urlParams.get('role');
         
+        // Role-specific redirect URLs
+        const roleRedirects = {
+            'hr': 'HR_HTML/HR.html',
+            'supervisor': 'SUPERVISOR_HTML/Supervisor.html',
+            'employee': 'EMPLOYEE_HTML/employee html.html'
+        };
+        
         // Set page elements based on role
         const roleTitle = document.getElementById('roleTitle');
         const roleImage = document.getElementById('roleImage');
         const loginForm = document.getElementById('loginForm');
+        const errorMessage = document.getElementById('errorMessage');
+        const loadingMessage = document.getElementById('loadingMessage');
+        const loginButton = document.getElementById('loginButton');
         
-        if (role === 'hr') {
-            document.title = "HR Login - LCMS";
-            roleTitle.innerText = "HR";
-            roleImage.className = "image-section hr-image";
-            loginForm.action = "#"; // For now, just redirect
-            loginForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                window.location.href = "HR_HTML/HR.html";
-            });
-        } else if (role === 'supervisor') {
-            document.title = "Supervisor Login - LCMS";
-            roleTitle.innerText = "Supervisor";
-            roleImage.className = "image-section supervisor-image";
-            loginForm.action = "#";
-            loginForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                window.location.href = "SUPERVISOR_HTML/Supervisor.html";
-            });
-        } else if (role === 'employee') {
-            document.title = "Employee Login - LCMS";
-            roleTitle.innerText = "Employee";
-            roleImage.className = "image-section employee-image";
-            loginForm.action = "#";
-            loginForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                window.location.href = "EMPLOYEE_HTML/employee html.html";
-            });
+        // Initialize page based on role
+        if (role && roleRedirects[role]) {
+            document.title = `${role.charAt(0).toUpperCase() + role.slice(1)} Login - LCMS`;
+            roleTitle.innerText = role.charAt(0).toUpperCase() + role.slice(1);
+            roleImage.className = `image-section ${role}-image`;
         } else {
-            // If no role is specified, redirect back to index
+            // If no valid role is specified, redirect back to index
             window.location.href = "index.html";
+        }
+        
+        // Firebase Auth state listener
+        firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+                // User is signed in, redirect to appropriate page
+                console.log('User signed in:', user.email);
+                window.location.href = roleRedirects[role];
+            }
+        });
+        
+        // Handle form submission
+        loginForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            // Show loading state
+            showLoading(true);
+            hideError();
+            
+            try {
+                // Sign in with Firebase Auth
+                const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+                
+                console.log('Login successful:', user.email);
+                
+                // Store user role in localStorage for future reference
+                localStorage.setItem('userRole', role);
+                localStorage.setItem('userEmail', user.email);
+                
+                // Redirect will happen automatically through onAuthStateChanged
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                showError(getErrorMessage(error.code));
+                showLoading(false);
+            }
+        });
+        
+        // Helper functions
+        function showLoading(show) {
+            loadingMessage.style.display = show ? 'block' : 'none';
+            loginButton.disabled = show;
+            loginButton.textContent = show ? 'Signing in...' : 'Login';
+        }
+        
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+        }
+        
+        function hideError() {
+            errorMessage.style.display = 'none';
+        }
+        
+        function getErrorMessage(errorCode) {
+            switch (errorCode) {
+                case 'auth/user-not-found':
+                    return 'No account found with this email address.';
+                case 'auth/wrong-password':
+                    return 'Incorrect password. Please try again.';
+                case 'auth/invalid-email':
+                    return 'Please enter a valid email address.';
+                case 'auth/user-disabled':
+                    return 'This account has been disabled.';
+                case 'auth/too-many-requests':
+                    return 'Too many failed attempts. Please try again later.';
+                case 'auth/network-request-failed':
+                    return 'Network error. Please check your connection.';
+                default:
+                    return 'Login failed. Please try again.';
+            }
         }
     </script>
 </body>
