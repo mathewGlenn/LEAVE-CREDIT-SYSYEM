@@ -20,6 +20,10 @@ const analytics = firebase.analytics();
 // Initialize Firebase Auth
 const auth = firebase.auth();
 
+// Initialize Firestore
+const db = firebase.firestore();
+
 // Log initialization
 console.log("Firebase initialized successfully");
 console.log("Firebase Auth initialized");
+console.log("Firestore initialized");
