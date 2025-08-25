@@ -1,0 +1,38 @@
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LCMS - Leave Credit Management System</title>
+    <link rel="stylesheet" href="CSS/index.css">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <!-- Add other Firebase services you may need -->
+    <!-- <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script> -->
+</head>
+<body>
+    <div class="container">
+        <div class="welcome-container">
+            <img src="./img/lcms_isu_campus_dark.png" alt="" style="width: 300px;">
+            <div class="role-buttons" style="margin-top: 20px;">
+                <button class="role-btn login-btn" style="width: 500px;" onclick="redirectToLogin()">Login</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase Initialization -->
+    <script src="js/firebase-init.js"></script>
+    
+    <script>
+        function redirectToLogin() {
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>

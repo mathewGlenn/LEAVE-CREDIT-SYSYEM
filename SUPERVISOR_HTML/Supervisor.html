@@ -5,6 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LCMS - Supervisor Dashboard</title>
     <link rel="stylesheet" href="../CSS/sidebar.css">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics-compat.js"></script>
+    
+    <!-- Firebase Initialization -->
+    <script src="../js/firebase-init.js"></script>
+    <script src="../js/auth-utils.js"></script>
+    
     <style>
         body {
             margin: 0;
@@ -145,6 +156,10 @@
     <script>
         // Call the loadSidebar function when the page loads
         document.addEventListener('DOMContentLoaded', function() {
+            // Check authentication first
+            checkAuthAndRole('supervisor');
+            
+            // Load sidebar
             loadSidebar('supervisor');
         });
     </script>

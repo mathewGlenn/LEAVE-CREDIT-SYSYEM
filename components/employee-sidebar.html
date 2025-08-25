@@ -1,7 +1,12 @@
 <!-- Employee Sidebar Component -->
 <div class="sidebar">
-    <div class="logo">LCMS</div>
-    <div class="campus-name">ISU CAUAYAN CAMPUS</div>
+    <div class="logo">
+        <img src="../img/lcms_isu.png" alt="" style="width: 100%;">
+    </div>
+    <div class="user-info">
+        <div class="user-name" id="sidebar-user-name">Loading...</div>
+        <div class="user-role">Employee</div>
+    </div>
     <a href="../EMPLOYEE_HTML/employee html.html" class="menu-item">EDIT PROFILE</a>
     <a href="../EMPLOYEE_HTML/req leave html.html" class="menu-item">REQUEST LEAVE</a>
     <a href="../EMPLOYEE_HTML/leave balance html.html" class="menu-item">LEAVE BALANCE</a>
@@ -11,6 +16,8 @@
 </div>
 
 <script>
+    // Note: User information is now loaded by sidebar-loader.js
+    
     // Get the current page filename
     const currentPage = window.location.pathname.split('/').pop();
     

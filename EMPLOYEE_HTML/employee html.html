@@ -6,11 +6,26 @@
     <title>LCMS - Employee Profile</title>
     <link rel="stylesheet" href="../CSS/Employee.css">
     <link rel="stylesheet" href="../CSS/sidebar.css">
-                <!-- Load sidebar script -->
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics-compat.js"></script>
+    
+    <!-- Firebase Initialization -->
+    <script src="../js/firebase-init.js"></script>
+    <script src="../js/auth-utils.js"></script>
+    
+    <!-- Load sidebar script -->
     <script src="../components/sidebar-loader.js"></script>
     <script>
         // Call the loadSidebar function when the page loads
         document.addEventListener('DOMContentLoaded', function() {
+            // Check authentication first
+            checkAuthAndRole('employee');
+            
+            // Load sidebar
             loadSidebar('employee');
         });
     </script>

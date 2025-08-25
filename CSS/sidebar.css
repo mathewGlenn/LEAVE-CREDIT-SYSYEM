@@ -3,7 +3,7 @@
     width: 250px;
     background: linear-gradient(145deg, #8395a7 0%, #576574 100%);
     height: 100vh;
-    padding: 20px;
+    padding: 10px 20px;
     display: flex;
     flex-direction: column;
     gap: 5px;
@@ -13,8 +13,7 @@
     color: #2c3e50;
     font-size: 32px;
     font-weight: bold;
-    margin-bottom: 10px;
-    padding: 20px;
+    padding: 5px;
 }
 
 .campus-name {
@@ -25,6 +24,29 @@
     border-radius: 15px;
     text-align: center;
     margin-bottom: 30px;
+}
+
+.user-info {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-radius: 15px;
+    padding: 15px;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.user-name {
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.user-role {
+    color: #ecf0f1;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.9;
 }
 
 .menu-item {

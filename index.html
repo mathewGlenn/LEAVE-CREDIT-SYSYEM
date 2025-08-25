@@ -1,30 +1,37 @@
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LCMS - Leave Credit Management System</title>
+    <title>Login - LCMS</title>
     <link rel="stylesheet" href="CSS/index.css">
     
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    <!-- Add other Firebase services you may need -->
-    <!-- <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script> -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
     <div class="container">
-        <div class="welcome-container">
-            <h1 class="welcome-title">Welcome to Leave Credit Management System</h1>
-            <p class="welcome-subtitle">ISU CAUAYAN CAMPUS</p>
-            <div class="role-buttons">
-                <button class="role-btn hr-btn" onclick="redirectToLogin('hr')">HR</button>
-                <button class="role-btn supervisor-btn" onclick="redirectToLogin('supervisor')">Supervisor</button>
-                <button class="role-btn employee-btn" onclick="redirectToLogin('employee')">Employee</button>
+        <div class="login-card">
+            <div class="login-form">
+                <div class="login-logo">
+                                   <img src="./img/lcms_isu_campus_dark.png" alt="" style="width: 300px;">
+                </div>
+                 
+                <form id="loginForm" style="margin-top: 20px;">
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    <div id="errorMessage" class="error-message" style="display: none;"></div>
+                    <div id="loadingMessage" class="loading-message" style="display: none;">Signing in...</div>
+                    <button type="submit" class="login-btn" id="loginButton">Login</button>
+                </form>
             </div>
         </div>
     </div>
@@ -33,9 +40,139 @@
     <script src="js/firebase-init.js"></script>
     
     <script>
-        function redirectToLogin(role) {
-            window.location.href = `login.html?role=${role}`;
+        // Wait for all scripts to load
+        window.addEventListener('load', function() {
+            initializeLogin();
+        });
+        
+        function initializeLogin() {
+            // Role-specific redirect URLs
+            const roleRedirects = {
+                'hr': 'HR_HTML/HR.html',
+                'supervisor': 'SUPERVISOR_HTML/Supervisor.html',
+                'employee': 'EMPLOYEE_HTML/employee html.html'
+            };
+            
+            const loginForm = document.getElementById('loginForm');
+            const errorMessage = document.getElementById('errorMessage');
+            const loadingMessage = document.getElementById('loadingMessage');
+            const loginButton = document.getElementById('loginButton');
+            
+            // Check if user is already logged in
+            firebase.auth().onAuthStateChanged((user) => {
+                if (user) {
+                    // User is signed in, check their role and redirect
+                    setTimeout(() => {
+                        getUserRoleAndRedirect(user);
+                    }, 100); // Small delay to ensure Firebase is fully initialized
+                }
+            });
+            
+            // Handle form submission
+            loginForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                
+                // Show loading state
+                showLoading(true);
+                hideError();
+                
+                try {
+                    // Sign in with Firebase Auth
+                    const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
+                    const user = userCredential.user;
+                    
+                    console.log('Login successful:', user.email);
+                
+                    // Get user role from Firestore and redirect
+                    await getUserRoleAndRedirect(user);
+                    
+                } catch (error) {
+                    console.error('Login error:', error);
+                    showError(getErrorMessage(error.code));
+                    showLoading(false);
+                }
+            });
+            
+            // Get user role from Firestore and redirect
+            async function getUserRoleAndRedirect(user) {
+                try {
+                    // Ensure Firebase is initialized
+                    if (typeof firebase === 'undefined' || !firebase.firestore) {
+                        console.error('Firebase not initialized yet, retrying...');
+                        setTimeout(() => getUserRoleAndRedirect(user), 300);
+                        return;
+                    }
+                    
+                    // Initialize Firestore instance
+                    const firestore = firebase.firestore();
+                    const userDoc = await firestore.collection('employees').doc(user.uid).get();
+                
+                if (userDoc.exists) {
+                    const userData = userDoc.data();
+                    const userRole = userData.role;
+                    
+                    // Store user info in localStorage
+                    localStorage.setItem('userRole', userRole);
+                    localStorage.setItem('userEmail', user.email);
+                    localStorage.setItem('userName', userData.name);
+                    
+                    // Redirect to appropriate dashboard
+                    if (roleRedirects[userRole]) {
+                        window.location.href = roleRedirects[userRole];
+                    } else {
+                        showError('Invalid user role. Please contact administrator.');
+                        showLoading(false);
+                    }
+                } else {
+                    showError('User profile not found. Please contact administrator.');
+                    showLoading(false);
+                }
+            } catch (error) {
+                console.error('Error getting user role:', error);
+                showError('Error accessing user profile. Please try again.');
+                showLoading(false);
+            }
         }
+        
+        // Helper functions
+        function showLoading(show) {
+            loadingMessage.style.display = show ? 'block' : 'none';
+            loginButton.disabled = show;
+            loginButton.textContent = show ? 'Signing in...' : 'Login';
+        }
+        
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+        }
+        
+        function hideError() {
+            errorMessage.style.display = 'none';
+        }
+        
+        function getErrorMessage(errorCode) {
+            switch (errorCode) {
+                case 'auth/user-not-found':
+                    return 'No account found with this email address.';
+                case 'auth/wrong-password':
+                    return 'Incorrect password. Please try again.';
+                case 'auth/invalid-email':
+                    return 'Please enter a valid email address.';
+                case 'auth/user-disabled':
+                    return 'This account has been disabled.';
+                case 'auth/too-many-requests':
+                    return 'Too many failed attempts. Please try again later.';
+                case 'auth/network-request-failed':
+                    return 'Network error. Please check your connection.';
+                default:
+                    return 'Login failed. Please try again.';
+            }
+        }
+        
+        } // End of initializeLogin function
     </script>
 </body>
 </html>
