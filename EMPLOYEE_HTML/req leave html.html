@@ -5,13 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LCMS - Request Leave</title>
     <link rel="stylesheet" href="../CSS/Req_leave.css">
-                <link rel="stylesheet" href="../CSS/sidebar.css">
+    <link rel="stylesheet" href="../CSS/sidebar.css">
 
-            <!-- Load sidebar script -->
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+    
+    <!-- Firebase configuration -->
+    <script src="../js/firebase-init.js"></script>
+    <script src="../js/auth-utils.js"></script>
+    
+    <!-- Load sidebar script -->
     <script src="../components/sidebar-loader.js"></script>
     <script>
         // Call the loadSidebar function when the page loads
         document.addEventListener('DOMContentLoaded', function() {
+            // Check authentication first
+            checkAuthAndRole('employee');
+            
+            // Load sidebar
             loadSidebar('employee');
         });
     </script>
@@ -28,10 +42,12 @@
                 <label for="leaveType">LEAVE TYPE</label>
                 <select id="leaveType" name="leaveType" required>
                     <option value="" disabled selected>Choose....</option>
-                    <option value="vacation">Vacation Leave</option>
+                    <option value="vacation">Regular Leave</option>
                     <option value="sick">Sick Leave</option>
-                    <option value="personal">Personal Leave</option>
+                    <option value="personal">Special Privilege Leave</option>
                     <option value="emergency">Emergency Leave</option>
+                    <option value="maternity">Maternity/Paternity Leave</option>
+                    <option value="service">Service Incentive Leave</option>
                 </select>
             </div>
 
@@ -77,46 +93,7 @@
         </form>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const startDate = document.getElementById('startDate');
-            const endDate = document.getElementById('endDate');
-            const numberOfDays = document.getElementById('numberOfDays');
-
-            function calculateDays() {
-                const start = new Date(startDate.value);
-                const end = new Date(endDate.value);
-                
-                if(startDate.value && endDate.value) {
-                    const diffTime = Math.abs(end - start);
-                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-                    numberOfDays.value = diffDays;
-                }
-            }
-
-            startDate.addEventListener('change', calculateDays);
-            endDate.addEventListener('change', calculateDays);
-
-            const fileInput = document.getElementById('supportingDocs');
-            const fileList = document.getElementById('fileList');
-
-            fileInput.addEventListener('change', function() {
-                fileList.innerHTML = '';
-                Array.from(this.files).forEach(file => {
-                    const fileItem = document.createElement('div');
-                    fileItem.className = 'file-item';
-                    fileItem.innerHTML = `
-                        <span class="file-name">${file.name}</span>
-                        <span class="remove-file">✕</span>
-                    `;
-                    fileList.appendChild(fileItem);
-
-                    fileItem.querySelector('.remove-file').addEventListener('click', function() {
-                        fileItem.remove();
-                    });
-                });
-            });
-        });
-    </script>
+    <!-- Leave Request Functionality -->
+    <script src="../js/leave-request.js"></script>
 </body>
 </html>

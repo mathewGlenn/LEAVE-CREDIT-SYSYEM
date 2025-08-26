@@ -5,14 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LCMS - Leave Status</title>
     <link rel="stylesheet" href="../CSS/Leave_status.css">
-                <link rel="stylesheet" href="../CSS/sidebar.css">
+    <link rel="stylesheet" href="../CSS/sidebar.css">
 
-            <!-- Load sidebar script -->
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    
+    <!-- Firebase Configuration -->
+    <script src="../js/firebase-init.js"></script>
+    
+    <!-- Leave Display Manager -->
+    <script src="../js/leave-display-manager.js"></script>
+    
+    <!-- Load sidebar script -->
     <script src="../components/sidebar-loader.js"></script>
     <script>
-        // Call the loadSidebar function when the page loads
+        // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
+            // Load sidebar
             loadSidebar('employee');
+            
+            // Initialize leave display manager and load status
+            const leaveDisplay = new LeaveDisplayManager();
+            leaveDisplay.displayLeaveStatus();
         });
     </script>
 </head>
@@ -34,11 +50,7 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td>Vacation Leave</td>
-                        <td>5</td>
-                        <td>Annual vacation</td>
-                        <td>2025-06-01</td>
-                        <td><span class="status-badge status-pending">Pending</span></td>
+                        <td colspan="5" style="text-align: center; padding: 20px;">Loading...</td>
                     </tr>
                 </tbody>
             </table>

@@ -17,9 +17,9 @@ body {
         .status-container {
             background-color: rgba(255, 255, 255, 0.9);
             border-radius: 20px;
+            width: 100%;
             padding: 30px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            width: 1200px;
         }
 
         .status-title {
@@ -77,4 +77,51 @@ body {
         .status-completed {
             background-color: #c7ecee;
             color: #2c3e50;
+        }
+
+        .status-pending {
+            background-color: #ffeaa7;
+            color: #b7791f;
+        }
+
+        .status-approved {
+            background-color: #55a3ff;
+            color: white;
+        }
+
+        .status-rejected {
+            background-color: #ff7675;
+            color: white;
+        }
+
+        .status-cancelled {
+            background-color: #ddd;
+            color: #666;
+        }
+
+        .loading-row {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .no-data-row {
+            text-align: center;
+            padding: 20px;
+            color: #999;
+        }
+
+        .error-row {
+            text-align: center;
+            padding: 20px;
+            color: #e74c3c;
+        }
+
+        .status-table tbody tr {
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .status-table tbody tr:hover {
+            background-color: #f8f9fa;
         }

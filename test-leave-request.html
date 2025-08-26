@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LCMS - Leave Request Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
+        .info { background-color: #d1ecf1; color: #0c5460; }
+        .btn {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn:hover { background-color: #0056b3; }
+        .btn:disabled { background-color: #6c757d; cursor: not-allowed; }
+    </style>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+    
+    <!-- Firebase configuration -->
+    <script src="js/firebase-init.js"></script>
+    <script src="js/leave-status-manager.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>LCMS - Leave Request System Test</h1>
+        
+        <div id="status" class="status info">
+            System ready. Please ensure you are logged in as an employee.
+        </div>
+
+        <div class="section">
+            <h2>Test Functions</h2>
+            <button class="btn" onclick="testUserData()">Test User Data Fetch</button>
+            <button class="btn" onclick="testCreateSampleRequest()">Create Sample Leave Request</button>
+            <button class="btn" onclick="testGetUserRequests()">Get User's Leave Requests</button>
+            <button class="btn" onclick="testFileUpload()">Test File Upload (Select File)</button>
+            <input type="file" id="testFile" style="display: none;" onchange="uploadTestFile()">
+        </div>
+
+        <div class="section">
+            <h2>Leave Request Simulation</h2>
+            <div>
+                <label>Leave Type:</label>
+                <select id="simLeaveType">
+                    <option value="vacation">Regular Leave</option>
+                    <option value="sick">Sick Leave</option>
+                    <option value="emergency">Emergency Leave</option>
+                </select>
+            </div>
+            <div>
+                <label>Start Date:</label>
+                <input type="date" id="simStartDate">
+            </div>
+            <div>
+                <label>End Date:</label>
+                <input type="date" id="simEndDate">
+            </div>
+            <div>
+                <label>Reason:</label>
+                <textarea id="simReason" placeholder="Enter reason for leave..."></textarea>
+            </div>
+            <button class="btn" onclick="submitSimulatedRequest()">Submit Simulated Request</button>
+        </div>
+
+        <div id="results" style="margin-top: 20px;"></div>
+    </div>
+
+    <script>
+        let leaveStatusManager;
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            leaveStatusManager = new LeaveStatusManager();
+            
+            // Set minimum dates to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('simStartDate').min = today;
+            document.getElementById('simEndDate').min = today;
+            
+            // Auto-calculate end date
+            document.getElementById('simStartDate').addEventListener('change', function() {
+                const startDate = this.value;
+                if (startDate) {
+                    document.getElementById('simEndDate').min = startDate;
+                }
+            });
+        });
+
+        function updateStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = message;
+            statusDiv.className = `status ${type}`;
+        }
+
+        function addResult(content) {
+            const resultsDiv = document.getElementById('results');
+            const resultItem = document.createElement('div');
+            resultItem.innerHTML = `<div class="status info"><strong>Result:</strong> ${content}</div>`;
+            resultsDiv.appendChild(resultItem);
+        }
+
+        async function testUserData() {
+            try {
+                updateStatus('Testing user data fetch...', 'info');
+                
+                const user = firebase.auth().currentUser;
+                if (!user) {
+                    updateStatus('No user logged in. Please log in first.', 'error');
+                    return;
+                }
+
+                // Test the getUserData method from leave-request.js
+                const userDoc = await firebase.firestore().collection('users').doc(user.uid).get();
+                
+                if (userDoc.exists) {
+                    const userData = userDoc.data();
+                    updateStatus('User data fetched successfully!', 'success');
+                    addResult(`User: ${userData.name}, Role: ${userData.role}, Department: ${userData.department}`);
+                    
+                    // Show leave credits
+                    const credits = userData.leaveCredits;
+                    let creditsInfo = 'Leave Credits: ';
+                    for (const [key, value] of Object.entries(credits)) {
+                        creditsInfo += `${value.title}: ${value.remaining}/${value.days} days remaining, `;
+                    }
+                    addResult(creditsInfo);
+                } else {
+                    updateStatus('User data not found in Firestore', 'error');
+                }
+            } catch (error) {
+                updateStatus(`Error: ${error.message}`, 'error');
+                console.error('Test error:', error);
+            }
+        }
+
+        async function testCreateSampleRequest() {
+            try {
+                updateStatus('Creating sample leave request...', 'info');
+                
+                const user = firebase.auth().currentUser;
+                if (!user) {
+                    updateStatus('No user logged in. Please log in first.', 'error');
+                    return;
+                }
+
+                // Get user data
+                const userDoc = await firebase.firestore().collection('users').doc(user.uid).get();
+                const userData = userDoc.data();
+
+                // Create sample leave request
+                const leaveRequest = {
+                    employeeId: user.uid,
+                    employeeName: userData.name,
+                    employeeEmail: userData.email,
+                    department: userData.department,
+                    designation: userData.designation,
+                    leaveType: 'vacation',
+                    startDate: '2025-09-01',
+                    endDate: '2025-09-03',
+                    numberOfDays: 3,
+                    reasonNotes: 'Sample leave request for testing purposes',
+                    status: 'pending_supervisor',
+                    supervisorApproval: {
+                        status: 'pending',
+                        approvedBy: null,
+                        approvedAt: null,
+                        comments: null
+                    },
+                    hrApproval: {
+                        status: 'pending',
+                        approvedBy: null,
+                        approvedAt: null,
+                        comments: null
+                    },
+                    supportingDocuments: [],
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+
+                const docRef = await firebase.firestore().collection('leaveRequests').add(leaveRequest);
+                updateStatus('Sample leave request created successfully!', 'success');
+                addResult(`Request ID: ${docRef.id}`);
+                
+            } catch (error) {
+                updateStatus(`Error: ${error.message}`, 'error');
+                console.error('Test error:', error);
+            }
+        }
+
+        async function testGetUserRequests() {
+            try {
+                updateStatus('Fetching user leave requests...', 'info');
+                
+                const user = firebase.auth().currentUser;
+                if (!user) {
+                    updateStatus('No user logged in. Please log in first.', 'error');
+                    return;
+                }
+
+                const requests = await leaveStatusManager.getUserLeaveRequests(user.uid);
+                updateStatus(`Found ${requests.length} leave requests`, 'success');
+                
+                requests.forEach((request, index) => {
+                    addResult(`${index + 1}. ${request.leaveType} - ${request.statusText} (${request.numberOfDays} days)`);
+                });
+                
+            } catch (error) {
+                updateStatus(`Error: ${error.message}`, 'error');
+                console.error('Test error:', error);
+            }
+        }
+
+        function testFileUpload() {
+            document.getElementById('testFile').click();
+        }
+
+        async function uploadTestFile() {
+            const fileInput = document.getElementById('testFile');
+            const file = fileInput.files[0];
+            
+            if (!file) return;
+
+            try {
+                updateStatus('Testing file upload...', 'info');
+                
+                const fileName = `test-uploads/${Date.now()}-${file.name}`;
+                const storageRef = firebase.storage().ref(fileName);
+                
+                const snapshot = await storageRef.put(file);
+                const downloadURL = await snapshot.ref.getDownloadURL();
+                
+                updateStatus('File uploaded successfully!', 'success');
+                addResult(`File URL: ${downloadURL}`);
+                
+            } catch (error) {
+                updateStatus(`Error uploading file: ${error.message}`, 'error');
+                console.error('Upload error:', error);
+            }
+        }
+
+        async function submitSimulatedRequest() {
+            try {
+                updateStatus('Submitting simulated leave request...', 'info');
+                
+                const user = firebase.auth().currentUser;
+                if (!user) {
+                    updateStatus('No user logged in. Please log in first.', 'error');
+                    return;
+                }
+
+                const leaveType = document.getElementById('simLeaveType').value;
+                const startDate = document.getElementById('simStartDate').value;
+                const endDate = document.getElementById('simEndDate').value;
+                const reason = document.getElementById('simReason').value;
+
+                if (!startDate || !endDate || !reason) {
+                    updateStatus('Please fill in all fields', 'error');
+                    return;
+                }
+
+                // Calculate days
+                const start = new Date(startDate);
+                const end = new Date(endDate);
+                const numberOfDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
+
+                // Get user data
+                const userDoc = await firebase.firestore().collection('users').doc(user.uid).get();
+                const userData = userDoc.data();
+
+                // Validate leave credits
+                const creditMapping = {
+                    'vacation': 'regularLeave',
+                    'sick': 'sickLeave',
+                    'emergency': 'emergencyLeave'
+                };
+                
+                const creditType = creditMapping[leaveType];
+                const availableCredits = userData.leaveCredits[creditType].remaining;
+                
+                if (numberOfDays > availableCredits) {
+                    updateStatus(`Insufficient leave credits. Available: ${availableCredits}, Requested: ${numberOfDays}`, 'error');
+                    return;
+                }
+
+                // Create leave request
+                const leaveRequest = {
+                    employeeId: user.uid,
+                    employeeName: userData.name,
+                    employeeEmail: userData.email,
+                    department: userData.department,
+                    designation: userData.designation,
+                    leaveType: leaveType,
+                    startDate: startDate,
+                    endDate: endDate,
+                    numberOfDays: numberOfDays,
+                    reasonNotes: reason,
+                    status: 'pending_supervisor',
+                    supervisorApproval: {
+                        status: 'pending',
+                        approvedBy: null,
+                        approvedAt: null,
+                        comments: null
+                    },
+                    hrApproval: {
+                        status: 'pending',
+                        approvedBy: null,
+                        approvedAt: null,
+                        comments: null
+                    },
+                    supportingDocuments: [],
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+
+                const docRef = await firebase.firestore().collection('leaveRequests').add(leaveRequest);
+                updateStatus('Simulated leave request submitted successfully!', 'success');
+                addResult(`Request ID: ${docRef.id}, Days: ${numberOfDays}, Type: ${leaveType}`);
+                
+                // Clear form
+                document.getElementById('simReason').value = '';
+                
+            } catch (error) {
+                updateStatus(`Error: ${error.message}`, 'error');
+                console.error('Simulation error:', error);
+            }
+        }
+
+        // Check authentication on page load
+        firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+                updateStatus(`Logged in as: ${user.email}`, 'success');
+            } else {
+                updateStatus('Not logged in. Please log in to test functionality.', 'error');
+            }
+        });
+    </script>
+</body>
+</html>
