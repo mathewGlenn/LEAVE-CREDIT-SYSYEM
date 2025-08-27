@@ -9,6 +9,7 @@ body {
         .main-content {
             flex: 1;
             padding: 30px;
+            margin-left: 290px;
         }
 
         .leave-container {

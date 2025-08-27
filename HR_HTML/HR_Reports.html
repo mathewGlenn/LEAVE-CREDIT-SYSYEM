@@ -1,125 +1,158 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>LCMS - Reports</title>
-    <link rel="stylesheet" href="../CSS/Reports.css">
-        <link rel="stylesheet" href="../CSS/sidebar.css">
+    <link rel="stylesheet" href="../CSS/Reports.css" />
+    <link rel="stylesheet" href="../CSS/sidebar.css" />
 
-            <!-- Load sidebar script -->
+    <!-- SweetAlert2 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- SweetAlert Custom CSS -->
+    <link rel="stylesheet" href="../CSS/sweetalert-custom.css" />
+    <!-- SweetAlert Utility Functions -->
+    <script src="../js/sweetalert-utils.js"></script>
+
+    <!-- Load sidebar script -->
     <script src="../components/sidebar-loader.js"></script>
     <script>
-        // Call the loadSidebar function when the page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            loadSidebar('hr');
-        });
+      // Call the loadSidebar function when the page loads
+      document.addEventListener("DOMContentLoaded", function () {
+        loadSidebar("hr");
+      });
     </script>
-</head>
-<body>
+  </head>
+  <body>
     <div id="sidebar-placeholder"></div>
 
     <div class="main-content">
-        <div class="reports-container">
-            <div class="section-title">LEAVE RECORDS</div>
-            <div class="leave-records">
-                <div class="leave-bar">
-                    <span class="leave-type clickable" onclick="showFilter('Regular Leave')">Regular Leave</span>
-                    <div class="bar regular"></div>
-                </div>
-                <div class="leave-bar">
-                    <span class="leave-type clickable" onclick="showFilter('Sick Leave')">Sick Leave</span>
-                    <div class="bar sick"></div>
-                </div>
-                <div class="leave-bar">
-                    <span class="leave-type clickable" onclick="showFilter('Birthday Leave')">Birthday Leave</span>
-                    <div class="bar birthday"></div>
-                </div>
-                <div class="leave-bar">
-                    <span class="leave-type clickable" onclick="showFilter('Vacation Leave')">Vacation Leave</span>
-                    <div class="bar vacation"></div>
-                </div>
-                <div class="leave-bar">
-                    <span class="leave-type clickable" onclick="showFilter('Maternity Leave')">Maternity Leave</span>
-                    <div class="bar maternity"></div>
-                </div>
-                <div class="leave-bar">
-                    <span class="leave-type clickable" onclick="showFilter('Paternity Leave')">Paternity Leave</span>
-                    <div class="bar paternity"></div>
-                </div>
-            </div>
-            <div id="filter-panel" class="filter-panel" style="display:none;">
-                <h3 id="filter-title"></h3>
-                <form>
-                    <label for="department">Department:</label>
-                    <select id="department" name="department">
-                        <option value="">All</option>
-                        <option value="HR">HR</option>
-                        <option value="IT">IT</option>
-                        <option value="Finance">Finance</option>
-                        <!-- Add more departments as needed -->
-                    </select>
-                    <label for="gender">Gender:</label>
-                    <select id="gender" name="gender">
-                        <option value="">All</option>
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                    </select>
-                    <label for="month">Month:</label>
-                    <select id="month" name="month">
-                        <option value="">All</option>
-                        <option value="January">January</option>
-                        <option value="February">February</option>
-                        <option value="March">March</option>
-                        <option value="April">April</option>
-                        <option value="May">May</option>
-                        <option value="June">June</option>
-                        <option value="July">July</option>
-                        <option value="August">August</option>
-                        <option value="September">September</option>
-                        <option value="October">October</option>
-                        <option value="November">November</option>
-                        <option value="December">December</option>
-                    </select>
-                    <button type="submit">Apply Filter</button>
-                    <button type="button" onclick="hideFilter()">Close</button>
-                </form>
-            </div>
+      <div class="reports-container">
+        <div class="section-title">LEAVE RECORDS</div>
+        <div class="leave-records">
+          <div class="leave-bar">
+            <span
+              class="leave-type clickable"
+              onclick="showFilter('Regular Leave')"
+              >Regular Leave</span
+            >
+            <div class="bar regular"></div>
+          </div>
+          <div class="leave-bar">
+            <span
+              class="leave-type clickable"
+              onclick="showFilter('Sick Leave')"
+              >Sick Leave</span
+            >
+            <div class="bar sick"></div>
+          </div>
+          <div class="leave-bar">
+            <span
+              class="leave-type clickable"
+              onclick="showFilter('Birthday Leave')"
+              >Birthday Leave</span
+            >
+            <div class="bar birthday"></div>
+          </div>
+          <div class="leave-bar">
+            <span
+              class="leave-type clickable"
+              onclick="showFilter('Vacation Leave')"
+              >Vacation Leave</span
+            >
+            <div class="bar vacation"></div>
+          </div>
+          <div class="leave-bar">
+            <span
+              class="leave-type clickable"
+              onclick="showFilter('Maternity Leave')"
+              >Maternity Leave</span
+            >
+            <div class="bar maternity"></div>
+          </div>
+          <div class="leave-bar">
+            <span
+              class="leave-type clickable"
+              onclick="showFilter('Paternity Leave')"
+              >Paternity Leave</span
+            >
+            <div class="bar paternity"></div>
+          </div>
         </div>
+        <div id="filter-panel" class="filter-panel" style="display: none">
+          <h3 id="filter-title"></h3>
+          <form>
+            <label for="department">Department:</label>
+            <select id="department" name="department">
+              <option value="">All</option>
+              <option value="HR">HR</option>
+              <option value="IT">IT</option>
+              <option value="Finance">Finance</option>
+              <!-- Add more departments as needed -->
+            </select>
+            <label for="gender">Gender:</label>
+            <select id="gender" name="gender">
+              <option value="">All</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+            </select>
+            <label for="month">Month:</label>
+            <select id="month" name="month">
+              <option value="">All</option>
+              <option value="January">January</option>
+              <option value="February">February</option>
+              <option value="March">March</option>
+              <option value="April">April</option>
+              <option value="May">May</option>
+              <option value="June">June</option>
+              <option value="July">July</option>
+              <option value="August">August</option>
+              <option value="September">September</option>
+              <option value="October">October</option>
+              <option value="November">November</option>
+              <option value="December">December</option>
+            </select>
+            <button type="submit">Apply Filter</button>
+            <button type="button" onclick="hideFilter()">Close</button>
+          </form>
+        </div>
+      </div>
     </div>
     <script>
-    function showFilter(leaveType) {
-        document.getElementById('filter-title').textContent = leaveType + ' - Filter';
-        document.getElementById('filter-panel').style.display = 'block';
-    }
-    function hideFilter() {
-        document.getElementById('filter-panel').style.display = 'none';
-    }
+      function showFilter(leaveType) {
+        document.getElementById("filter-title").textContent =
+          leaveType + " - Filter";
+        document.getElementById("filter-panel").style.display = "block";
+      }
+      function hideFilter() {
+        document.getElementById("filter-panel").style.display = "none";
+      }
     </script>
     <style>
-    .leave-type.clickable {
+      .leave-type.clickable {
         cursor: pointer;
         color: #007bff;
         text-decoration: underline;
-    }
-    .filter-panel {
+      }
+      .filter-panel {
         margin-top: 20px;
         padding: 16px;
         border: 1px solid #ccc;
         background: #f9f9f9;
         max-width: 400px;
-    }
-    .filter-panel label {
+      }
+      .filter-panel label {
         display: block;
         margin-top: 10px;
-    }
-    .filter-panel select, .filter-panel button {
+      }
+      .filter-panel select,
+      .filter-panel button {
         margin-top: 5px;
         width: 100%;
-    }
-    .filter-panel button {
+      }
+      .filter-panel button {
         margin-top: 15px;
-    }
+      }
     </style>
-</body>
+  </body>
 </html>

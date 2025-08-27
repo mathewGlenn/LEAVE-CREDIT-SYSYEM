@@ -1,275 +1,121 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <link rel="stylesheet" href="../CSS/sidebar.css" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../CSS/Employee.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>LCMS - Request Leave</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-            background-color: #e6f3f5;
-            display: flex;
-        }
+  </head>
+  <body>
+    <div id="sidebar-placeholder"></div>
+    <div class="main-content flex-center">
+      <form class="leave-form">
+        <div class="form-title">REQUEST LEAVE</div>
+        <div class="form-group">
+          <label for="leaveType">LEAVE TYPE</label>
+          <select id="leaveType" name="leaveType" required>
+            <option value="" disabled selected>Choose....</option>
+            <option value="vacation">Vacation Leave</option>
+            <option value="sick">Sick Leave</option>
+            <option value="personal">Personal Leave</option>
+            <option value="emergency">Emergency Leave</option>
+          </select>
+        </div>
 
-        .sidebar {
-            width: 250px;
-            background: linear-gradient(145deg, #8395a7 0%, #576574 100%);
-            height: 100vh;
-            padding: 20px;
-        }
+        <div class="form-group">
+          <label for="startDate">START DATE</label>
+          <input type="date" id="startDate" name="startDate" required />
+        </div>
 
-        .logo {
-            color: #2c3e50;
-            font-size: 32px;
-            font-weight: bold;
-            margin-bottom: 10px;
-            padding: 20px;
-        }
+        <div class="form-group">
+          <label for="endDate">END DATE</label>
+          <input type="date" id="endDate" name="endDate" required />
+        </div>
 
-        .campus-name {
-            color: #34495e;
-            font-size: 16px;
-            padding: 10px;
-            background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            text-align: center;
-            margin-bottom: 30px;
-        }
+        <div class="form-group">
+          <label for="numberOfDays">NUMBER OF DAYS</label>
+          <input
+            type="number"
+            id="numberOfDays"
+            name="numberOfDays"
+            min="1"
+            required
+            class="number-input"
+            readonly
+          />
+        </div>
 
-        .menu-item {
-            background-color: rgba(230, 243, 245, 0.9);
-            margin: 10px 0;
-            padding: 12px 20px;
-            border-radius: 20px;
-            color: #2c3e50;
-            text-decoration: none;
-            display: block;
-            transition: all 0.3s ease;
-        }
+        <div class="form-group">
+          <label for="reasonNotes">REASON NOTES</label>
+          <textarea id="reasonNotes" name="reasonNotes" required></textarea>
+        </div>
 
-        .menu-item:hover {
-            background-color: #fff;
-            transform: translateX(10px);
-        }
+        <div class="form-group">
+          <label for="supportingDocs">SUPPORTING DOCUMENTS</label>
+          <div class="file-upload">
+            <input
+              type="file"
+              id="supportingDocs"
+              name="supportingDocs"
+              multiple
+            />
+            <label for="supportingDocs" class="file-upload-btn">
+              <span>+ Add Files</span>
+              <small>Supported formats: PDF, DOC, DOCX, JPG, PNG</small>
+            </label>
+          </div>
+          <div id="fileList" class="file-list"></div>
+        </div>
 
-        .main-content {
-            flex: 1;
-            padding: 30px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-        }
-
-        .leave-form {
-            background-color: rgba(255, 255, 255, 0.9);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            width: 800px;
-        }
-
-        .form-title {
-            background-color: #c7ecee;
-            color: #2c3e50;
-            padding: 15px;
-            text-align: center;
-            border-radius: 15px;
-            margin-bottom: 30px;
-            font-size: 20px;
-            font-weight: 500;
-            text-transform: uppercase;
-        }
-
-        .form-group {
-            margin-bottom: 25px;
-        }
-
-        label {
-            display: block;
-            color: #2c3e50;
-            margin-bottom: 8px;
-            font-size: 14px;
-            font-weight: bold;
-        }
-
-        select, 
-        input[type="date"],
-        input[type="number"] {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 15px;
-            background-color: #f5f6fa;
-            color: #2c3e50;
-            font-size: 14px;
-        }
-
-        textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 15px;
-            background-color: #f5f6fa;
-            color: #2c3e50;
-            font-size: 14px;
-            resize: vertical;
-            min-height: 100px;
-        }
-
-        .file-upload {
-            position: relative;
-            margin-bottom: 10px;
-        }
-
-        .file-upload input[type="file"] {
-            position: absolute;
-            width: 0;
-            height: 0;
-            opacity: 0;
-        }
-
-        .file-upload-btn {
-            display: block;
-            padding: 15px;
-            background-color: #f5f6fa;
-            border: 2px dashed #e0e0e0;
-            border-radius: 15px;
-            cursor: pointer;
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-
-        .file-upload-btn:hover {
-            border-color: #c7ecee;
-            background-color: #fff;
-        }
-
-        .submit-btn {
-            background-color: #c7ecee;
-            color: #2c3e50;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 15px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            display: block;
-            margin: 40px auto 0;
-            text-transform: uppercase;
-        }
-
-        .submit-btn:hover {
-            background-color: #a3e4f3;
-            transform: translateY(-2px);
-        }
-    </style>
-</head>
-<body>
-  <div id="sidebar-placeholder"></div>
-    <div class="main-content">
-        <form class="leave-form">
-            <div class="form-title">REQUEST LEAVE</div>
-            <div class="form-group">
-                <label for="leaveType">LEAVE TYPE</label>
-                <select id="leaveType" name="leaveType" required>
-                    <option value="" disabled selected>Choose....</option>
-                    <option value="vacation">Vacation Leave</option>
-                    <option value="sick">Sick Leave</option>
-                    <option value="personal">Personal Leave</option>
-                    <option value="emergency">Emergency Leave</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="startDate">START DATE</label>
-                <input type="date" id="startDate" name="startDate" required>
-            </div>
-
-            <div class="form-group">
-                <label for="endDate">END DATE</label>
-                <input type="date" id="endDate" name="endDate" required>
-            </div>
-
-            <div class="form-group">
-                <label for="numberOfDays">NUMBER OF DAYS</label>
-                <input type="number" 
-                       id="numberOfDays" 
-                       name="numberOfDays" 
-                       min="1" 
-                       required 
-                       class="number-input"
-                       readonly>
-            </div>
-
-            <div class="form-group">
-                <label for="reasonNotes">REASON NOTES</label>
-                <textarea id="reasonNotes" name="reasonNotes" required></textarea>
-            </div>
-
-            <div class="form-group">
-                <label for="supportingDocs">SUPPORTING DOCUMENTS</label>
-                <div class="file-upload">
-                    <input type="file" id="supportingDocs" name="supportingDocs" multiple>
-                    <label for="supportingDocs" class="file-upload-btn">
-                        <span>+ Add Files</span>
-                        <small>Supported formats: PDF, DOC, DOCX, JPG, PNG</small>
-                    </label>
-                </div>
-                <div id="fileList" class="file-list"></div>
-            </div>
-
-            <button type="submit" class="submit-btn">SUBMIT</button>
-        </form>
+        <button type="submit" class="submit-btn">SUBMIT</button>
+      </form>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const startDate = document.getElementById('startDate');
-            const endDate = document.getElementById('endDate');
-            const numberOfDays = document.getElementById('numberOfDays');
+      document.addEventListener("DOMContentLoaded", function () {
+        const startDate = document.getElementById("startDate");
+        const endDate = document.getElementById("endDate");
+        const numberOfDays = document.getElementById("numberOfDays");
 
-            function calculateDays() {
-                const start = new Date(startDate.value);
-                const end = new Date(endDate.value);
-                
-                if(startDate.value && endDate.value) {
-                    const diffTime = Math.abs(end - start);
-                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-                    numberOfDays.value = diffDays;
-                }
-            }
+        function calculateDays() {
+          const start = new Date(startDate.value);
+          const end = new Date(endDate.value);
 
-            startDate.addEventListener('change', calculateDays);
-            endDate.addEventListener('change', calculateDays);
+          if (startDate.value && endDate.value) {
+            const diffTime = Math.abs(end - start);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+            numberOfDays.value = diffDays;
+          }
+        }
 
-            const fileInput = document.getElementById('supportingDocs');
-            const fileList = document.getElementById('fileList');
+        startDate.addEventListener("change", calculateDays);
+        endDate.addEventListener("change", calculateDays);
 
-            fileInput.addEventListener('change', function() {
-                fileList.innerHTML = '';
-                Array.from(this.files).forEach(file => {
-                    const fileItem = document.createElement('div');
-                    fileItem.className = 'file-item';
-                    fileItem.innerHTML = `
+        const fileInput = document.getElementById("supportingDocs");
+        const fileList = document.getElementById("fileList");
+
+        fileInput.addEventListener("change", function () {
+          fileList.innerHTML = "";
+          Array.from(this.files).forEach((file) => {
+            const fileItem = document.createElement("div");
+            fileItem.className = "file-item";
+            fileItem.innerHTML = `
                         <span class="file-name">${file.name}</span>
                         <span class="remove-file">✕</span>
                     `;
-                    fileList.appendChild(fileItem);
-                });
-            });
+            fileList.appendChild(fileItem);
+          });
         });
+      });
     </script>
-        <!-- Load sidebar script -->
+    <!-- Load sidebar script -->
     <script src="../components/sidebar-loader.js"></script>
     <script>
-        // Call the loadSidebar function when the page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            loadSidebar('supervisor');
-        });
+      // Call the loadSidebar function when the page loads
+      document.addEventListener("DOMContentLoaded", function () {
+        loadSidebar("supervisor");
+      });
     </script>
-</body>
+  </body>
 </html>
