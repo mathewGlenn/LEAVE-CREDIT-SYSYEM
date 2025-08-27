@@ -1,84 +1,487 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LCMS - Employee Profile</title>
-    <link rel="stylesheet" href="../CSS/Employee.css">
-    <link rel="stylesheet" href="../CSS/sidebar.css">
-    
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LCMS - Employee Dashboard</title>
+    <link rel="stylesheet" href="../CSS/Employee.css" />
+    <link rel="stylesheet" href="../CSS/sidebar.css" />
+
+    <!-- SweetAlert2 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- SweetAlert Custom CSS -->
+    <link rel="stylesheet" href="../CSS/sweetalert-custom.css" />
+
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics-compat.js"></script>
-    
+
     <!-- Firebase Initialization -->
     <script src="../js/firebase-init.js"></script>
     <script src="../js/auth-utils.js"></script>
-    
+
+    <!-- SweetAlert Utility Functions -->
+    <script src="../js/sweetalert-utils.js"></script>
+
     <!-- Load sidebar script -->
     <script src="../components/sidebar-loader.js"></script>
     <script>
-        // Call the loadSidebar function when the page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            // Check authentication first
-            checkAuthAndRole('employee');
-            
-            // Load sidebar
-            loadSidebar('employee');
+      // Call the loadSidebar function when the page loads
+      document.addEventListener("DOMContentLoaded", function () {
+        // Check authentication first
+        checkAuthAndRole("employee");
+
+        // Load sidebar
+        loadSidebar("employee");
+
+        // Load dashboard data
+        loadDashboardData();
+      });
+
+      // Function to load dashboard data from Firebase
+      async function loadDashboardData() {
+        try {
+          // Wait for Firebase Auth to be ready
+          firebase.auth().onAuthStateChanged(async (user) => {
+            if (user) {
+              const uid = user.uid;
+
+              // Get user document from Firestore
+              const userDoc = await firebase
+                .firestore()
+                .collection("employees")
+                .doc(uid)
+                .get();
+
+              if (userDoc.exists) {
+                const userData = userDoc.data();
+                console.log("Dashboard data loaded:", userData);
+
+                // Update welcome message with user name
+                updateWelcomeMessage(userData.name || "Employee");
+
+                // Update leave balance table
+                updateLeaveBalanceTable(userData.leaveCredits || {});
+              } else {
+                console.log("No user document found");
+              }
+            }
+          });
+        } catch (error) {
+          console.error("Error loading dashboard data:", error);
+        }
+      }
+
+      // Function to update welcome message
+      function updateWelcomeMessage(userName) {
+        const headerElement = document.querySelector(".dashboard-header h1");
+        if (headerElement) {
+          headerElement.textContent = `Welcome, ${userName}!`;
+        }
+      }
+
+      // Function to update leave balance table
+      function updateLeaveBalanceTable(leaveCredits) {
+        const tableBody = document.querySelector(".balance-table tbody");
+        if (!tableBody) return;
+
+        // Clear existing rows
+        tableBody.innerHTML = "";
+
+        // Define the order and display names for leave types
+        const leaveTypeOrder = [
+          { key: "regularLeave", display: "Regular Leave" },
+          { key: "sickLeave", display: "Sick Leave" },
+          { key: "emergencyLeave", display: "Emergency Leave" },
+          { key: "serviceLeave", display: "Service Incentive Leave" },
+          { key: "specialLeave", display: "Special Privilege Leave" },
+          { key: "maternityLeave", display: "Maternity/Paternity Leave" },
+        ];
+
+        // Create rows for each leave type
+        leaveTypeOrder.forEach((leaveType) => {
+          const leaveData = leaveCredits[leaveType.key];
+          if (leaveData) {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+              <td>${leaveData.title || leaveType.display}</td>
+              <td class="available-days">${leaveData.remaining || 0}</td>
+              <td>${leaveData.used || 0}</td>
+              <td>${leaveData.days || 0}</td>
+            `;
+            tableBody.appendChild(row);
+          }
         });
+
+        // If no leave credits found, show default message
+        if (Object.keys(leaveCredits).length === 0) {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td colspan="4" style="text-align: center; color: #666;">
+              No leave credit data available
+            </td>
+          `;
+          tableBody.appendChild(row);
+        }
+      }
     </script>
-</head>
-<body>
+  </head>
+  <body>
     <!-- Sidebar placeholder that will be filled by the JavaScript -->
     <div id="sidebar-placeholder"></div>
     <div class="main-content">
-        <form>
-            <div class="form-title">EMPLOYEE PROFILE</div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="firstName">FIRST NAME</label>
-                    <input type="text" id="firstName" name="firstName">
-                </div>
-                <div class="form-group">
-                    <label for="lastName">LAST NAME</label>
-                    <input type="text" id="lastName" name="lastName">
-                </div>
+      <!-- Dashboard Header -->
+      <div class="dashboard-header">
+        <div class="header-content">
+          <div class="welcome-section">
+            <h1>Welcome to Your Dashboard</h1>
+            <p>Overview of your leave information</p>
+          </div>
+          <div class="profile-section">
+            <button
+              class="profile-btn"
+              onclick="window.location.href='employee-profile-view.html'"
+              title="View Profile"
+            >
+              <span class="profile-icon">👤</span>
+              <span class="profile-text">Profile</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dashboard Cards Container -->
+      <div class="dashboard-cards">
+        <!-- Leave Balance Card -->
+        <div class="dashboard-card full-width">
+          <div class="card-header">
+            <h2>Leave Balance</h2>
+          </div>
+          <div class="card-content">
+            <table class="balance-table">
+              <thead>
+                <tr>
+                  <th>LEAVE TYPE</th>
+                  <th>AVAILABLE</th>
+                  <th>USED</th>
+                  <th>TOTAL</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="loading-row">
+                  <td colspan="4" style="text-align: center; color: #666">
+                    <div class="loading-spinner"></div>
+                    Loading leave balance...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Activity Card -->
+      <div class="dashboard-card full-width">
+        <div class="card-header">
+          <h2>Recent Activity</h2>
+        </div>
+        <div class="card-content">
+          <div class="activity-item">
+            <div class="activity-icon">📅</div>
+            <div class="activity-details">
+              <p><strong>Leave Request Submitted</strong></p>
+              <span class="activity-date">Today, 2:30 PM</span>
             </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="gender">GENDER</label>
-                    <select id="gender" name="gender">
-                        <option value="" disabled selected>Select Gender</option>
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                        <option value="Other">Other</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="phoneNumber">PHONE NUMBER</label>
-                    <input type="text" id="phoneNumber" name="phoneNumber">
-                </div>
+            <div class="activity-status pending">Pending</div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-icon">✅</div>
+            <div class="activity-details">
+              <p><strong>Sick Leave Approved</strong></p>
+              <span class="activity-date">May 12, 2025 10:15 AM</span>
             </div>
-            <div class="form-group">
-                <label for="email">EMAIL ADDRESS</label>
-                <input type="email" id="email" name="email">
-            </div>
-            <div class="form-group">
-                <label for="address">HOME ADDRESS</label>
-                <input type="text" id="address" name="address">
-            </div>
-            <div class="form-group">
-                <label for="designation">DESIGNATION</label>
-                <input type="text" id="designation" name="designation">
-            </div>
-            <div class="form-group">
-                <label for="department">DEPARTMENT UNIT</label>
-                <input type="text" id="department" name="department">
-            </div>
-            <button type="submit" class="save-button">SAVE CHANGES</button>
-        </form>
+            <div class="activity-status approved">Approved</div>
+          </div>
+        </div>
+      </div>
     </div>
-</body>
+
+    <style>
+      /* Dashboard-specific styles */
+      .dashboard-header {
+        margin-bottom: 30px;
+        background: linear-gradient(135deg, #c7ecee, #a3e4f3);
+        padding: 30px;
+        border-radius: 20px;
+        color: #2c3e50;
+      }
+
+      .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .welcome-section h1 {
+        margin: 0 0 10px 0;
+        font-size: 28px;
+        font-weight: bold;
+      }
+
+      .welcome-section p {
+        margin: 0;
+        font-size: 16px;
+        opacity: 0.8;
+      }
+
+      .profile-btn {
+        background-color: rgba(255, 255, 255, 0.2);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        color: #2c3e50;
+        padding: 12px 20px;
+        border-radius: 25px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        backdrop-filter: blur(10px);
+      }
+
+      .profile-btn:hover {
+        background-color: rgba(255, 255, 255, 0.3);
+        border-color: rgba(255, 255, 255, 0.5);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .profile-icon {
+        font-size: 20px;
+      }
+
+      .dashboard-cards {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 20px;
+        margin-bottom: 20px;
+      }
+
+      .dashboard-card {
+        background-color: rgba(255, 255, 255, 0.9);
+        border-radius: 20px;
+        padding: 20px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .dashboard-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      }
+
+      .dashboard-card.full-width {
+        grid-column: 1 / -1;
+      }
+
+      .card-header {
+        border-bottom: 2px solid #c7ecee;
+        padding-bottom: 15px;
+        margin-bottom: 20px;
+      }
+
+      .card-header h2 {
+        margin: 0;
+        color: #2c3e50;
+        font-size: 20px;
+      }
+
+      .balance-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .balance-table th,
+      .balance-table td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #e0e0e0;
+      }
+
+      .balance-table th {
+        background-color: #f8f9fa;
+        font-weight: bold;
+        color: #2c3e50;
+      }
+
+      .available-days {
+        color: #27ae60;
+        font-weight: bold;
+      }
+
+      /* Loading spinner styles */
+      .loading-spinner {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 2px solid #f3f3f3;
+        border-top: 2px solid #3498db;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-right: 10px;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .loading-row {
+        opacity: 0.7;
+      }
+
+      .action-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .action-btn {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 15px 20px;
+        border: none;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+      }
+
+      .action-btn.primary {
+        background-color: #3498db;
+        color: white;
+      }
+
+      .action-btn.primary:hover {
+        background-color: #2980b9;
+        transform: translateX(5px);
+      }
+
+      .action-btn.secondary {
+        background-color: #27ae60;
+        color: white;
+      }
+
+      .action-btn.secondary:hover {
+        background-color: #229954;
+        transform: translateX(5px);
+      }
+
+      .action-btn.tertiary {
+        background-color: #f39c12;
+        color: white;
+      }
+
+      .action-btn.tertiary:hover {
+        background-color: #e67e22;
+        transform: translateX(5px);
+      }
+
+      .btn-icon {
+        font-size: 20px;
+      }
+
+      .activity-item {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 15px;
+        border-bottom: 1px solid #e0e0e0;
+        transition: background-color 0.3s ease;
+      }
+
+      .activity-item:hover {
+        background-color: #f8f9fa;
+      }
+
+      .activity-item:last-child {
+        border-bottom: none;
+      }
+
+      .activity-icon {
+        font-size: 24px;
+        width: 40px;
+        text-align: center;
+      }
+
+      .activity-details {
+        flex: 1;
+      }
+
+      .activity-details p {
+        margin: 0 0 5px 0;
+        color: #2c3e50;
+      }
+
+      .activity-date {
+        color: #7f8c8d;
+        font-size: 14px;
+      }
+
+      .activity-status {
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: bold;
+        text-transform: uppercase;
+      }
+
+      .activity-status.pending {
+        background-color: #fff3cd;
+        color: #856404;
+      }
+
+      .activity-status.approved {
+        background-color: #d4edda;
+        color: #155724;
+      }
+
+      .activity-status.completed {
+        background-color: #d1ecf1;
+        color: #0c5460;
+      }
+
+      /* Responsive design */
+      @media (max-width: 768px) {
+        .dashboard-cards {
+          grid-template-columns: 1fr;
+        }
+
+        .header-content {
+          flex-direction: column;
+          text-align: center;
+          gap: 20px;
+        }
+
+        .welcome-section h1 {
+          font-size: 24px;
+        }
+
+        .profile-btn {
+          padding: 10px 16px;
+          font-size: 14px;
+        }
+      }
+    </style>
+  </body>
 </html>

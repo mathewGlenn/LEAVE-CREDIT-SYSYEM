@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SweetAlert Implementation Demo - LCMS</title>
+    <link rel="stylesheet" href="../CSS/HR.css">
+    <link rel="stylesheet" href="../CSS/sidebar.css">
+    
+    <!-- SweetAlert2 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- SweetAlert Custom CSS -->
+    <link rel="stylesheet" href="../CSS/sweetalert-custom.css">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    
+    <!-- Firebase Initialization -->
+    <script src="../js/firebase-init.js"></script>
+    
+    <!-- SweetAlert Utility Functions -->
+    <script src="../js/sweetalert-utils.js"></script>
+</head>
+<body>
+    <!-- Sidebar placeholder that will be filled by the JavaScript -->
+    <div id="sidebar-placeholder"></div>
+
+    <div class="main-content">
+        <div class="hr-container">
+            <div class="dashboard-title">SWEETALERT DEMO - HR DASHBOARD</div>
+            <div class="welcome-message">Welcome! This page demonstrates SweetAlert integration with custom background color #e6f3f5.</div>
+            
+            <div class="demo-section" style="margin: 30px 0; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background-color: #e6f3f5;">
+                <h3>SweetAlert Demo Buttons</h3>
+                <p><strong>Note:</strong> All SweetAlert popups now use the background color <code>#e6f3f5</code> to match your current styling.</p>
+                
+                <div style="margin: 10px 0;">
+                    <button onclick="showSuccessAlert('Success!', 'This popup uses the custom background color #e6f3f5.')" 
+                            style="background: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; margin: 5px; cursor: pointer;">
+                        Success Alert
+                    </button>
+                    
+                    <button onclick="showErrorAlert('Error!', 'This popup uses the custom background color #e6f3f5.')" 
+                            style="background: #f44336; color: white; padding: 10px 20px; border: none; border-radius: 5px; margin: 5px; cursor: pointer;">
+                        Error Alert
+                    </button>
+                    
+                    <button onclick="showWarningAlert('Warning!', 'This popup uses the custom background color #e6f3f5.')" 
+                            style="background: #ff9800; color: white; padding: 10px 20px; border: none; border-radius: 5px; margin: 5px; cursor: pointer;">
+                        Warning Alert
+                    </button>
+                    
+                    <button onclick="showInfoAlert('Information', 'This is an info message.')" 
+                            style="background: #2196F3; color: white; padding: 10px 20px; border: none; border-radius: 5px; margin: 5px; cursor: pointer;">
+                        Info Alert
+                    </button>
+                </div>
+                
+                <div style="margin: 10px 0;">
+                    <button onclick="testConfirmation()" 
+                            style="background: #9C27B0; color: white; padding: 10px 20px; border: none; border-radius: 5px; margin: 5px; cursor: pointer;">
+                        Confirmation Dialog
+                    </button>
+                    
+                    <button onclick="testDeleteConfirmation()" 
+                            style="background: #f44336; color: white; padding: 10px 20px; border: none; border-radius: 5px; margin: 5px; cursor: pointer;">
+                        Delete Confirmation
+                    </button>
+                    
+                    <button onclick="testLogoutConfirmation()" 
+                            style="background: #ff9800; color: white; padding: 10px 20px; border: none; border-radius: 5px; margin: 5px; cursor: pointer;">
+                        Test Logout Confirmation
+                    </button>
+                </div>
+                
+                <div style="margin: 10px 0;">
+                    <button onclick="testLoadingDialog()" 
+                            style="background: #607D8B; color: white; padding: 10px 20px; border: none; border-radius: 5px; margin: 5px; cursor: pointer;">
+                        Loading Dialog
+                    </button>
+                    
+                    <button onclick="testToast()" 
+                            style="background: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; margin: 5px; cursor: pointer;">
+                        Toast Notification
+                    </button>
+                    
+                    <button onclick="testFormDialog()" 
+                            style="background: #3F51B5; color: white; padding: 10px 20px; border: none; border-radius: 5px; margin: 5px; cursor: pointer;">
+                        Form Dialog
+                    </button>
+                </div>
+            </div>
+            
+            <div class="integration-info" style="margin: 30px 0; padding: 20px; background: #f5f5f5; border-radius: 8px;">
+                <h3>Integration Instructions</h3>
+                <p>To add SweetAlert to any existing page in the LCMS system:</p>
+                <ol>
+                    <li>Add the SweetAlert2 CDN script tag to the &lt;head&gt; section</li>
+                    <li>Add the custom CSS file for LCMS styling</li>
+                    <li>Add the sweetalert-utils.js script</li>
+                    <li>Replace confirm() calls with appropriate SweetAlert functions</li>
+                </ol>
+                
+                <h4>Required Scripts:</h4>
+                <pre style="background: #fff; padding: 10px; border-radius: 5px; font-size: 12px;">
+&lt;!-- SweetAlert2 CDN --&gt;
+&lt;script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"&gt;&lt;/script&gt;
+&lt;!-- SweetAlert Custom CSS --&gt;
+&lt;link rel="stylesheet" href="../CSS/sweetalert-custom.css"&gt;
+&lt;!-- SweetAlert Utility Functions --&gt;
+&lt;script src="../js/sweetalert-utils.js"&gt;&lt;/script&gt;</pre>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Load sidebar script -->
+    <script src="../js/auth-utils.js"></script>
+    <script src="../components/sidebar-loader.js"></script>
+    
+    <script>
+        // Demo functions for testing SweetAlert
+        function testConfirmation() {
+            showConfirmationDialog(
+                'Are you sure?',
+                'This action will perform a test operation.',
+                () => {
+                    showSuccessAlert('Confirmed!', 'You confirmed the action.');
+                },
+                () => {
+                    showInfoAlert('Cancelled', 'Action was cancelled.');
+                }
+            );
+        }
+        
+        function testDeleteConfirmation() {
+            showDeleteConfirmation(
+                'Test Item',
+                () => {
+                    showSuccessAlert('Deleted!', 'Test item has been deleted.');
+                }
+            );
+        }
+        
+        function testLogoutConfirmation() {
+            showLogoutConfirmation(
+                () => {
+                    showSuccessAlert('Logout Confirmed', 'In a real scenario, you would be logged out now.');
+                }
+            );
+        }
+        
+        function testLoadingDialog() {
+            showLoadingDialog('Processing', 'Please wait while we process your request...');
+            
+            // Simulate a process and close after 3 seconds
+            setTimeout(() => {
+                closeDialog();
+                showSuccessAlert('Complete!', 'Process completed successfully.');
+            }, 3000);
+        }
+        
+        function testToast() {
+            showToast('Toast notification!', 'success');
+        }
+        
+        function testFormDialog() {
+            const fields = {
+                name: {
+                    label: 'Full Name',
+                    type: 'text',
+                    required: true,
+                    placeholder: 'Enter your full name'
+                },
+                email: {
+                    label: 'Email Address',
+                    type: 'email',
+                    required: true,
+                    placeholder: 'Enter your email'
+                },
+                department: {
+                    label: 'Department',
+                    type: 'text',
+                    required: false,
+                    placeholder: 'Enter your department'
+                }
+            };
+            
+            showFormDialog(
+                'Employee Information',
+                fields,
+                (formData) => {
+                    showSuccessAlert(
+                        'Form Submitted!', 
+                        `Name: ${formData.name}\nEmail: ${formData.email}\nDepartment: ${formData.department || 'Not specified'}`
+                    );
+                }
+            );
+        }
+        
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check authentication first
+            checkAuthAndRole('hr');
+            
+            // Load sidebar
+            loadSidebar('hr');
+        });
+    </script>
+</body>
+</html>

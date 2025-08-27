@@ -10,6 +10,7 @@ body {
             flex: 1;
             padding: 30px;
             display: flex;
+            margin-left: 290px;
             justify-content: center;
             align-items: flex-start;
         }

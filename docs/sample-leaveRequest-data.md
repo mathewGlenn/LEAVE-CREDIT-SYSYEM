@@ -1,5 +1,6 @@
 # leaveRequest data
 
+```JSON
 {
 "createdAt": "2025-08-26T23:32:00+08:00",
 "department": "Department2",
@@ -34,3 +35,4 @@
 }
 ]
 }
+```

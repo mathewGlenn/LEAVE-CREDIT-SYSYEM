@@ -1,5 +1,6 @@
 # Sample user data from google fire store
 
+```JSON
 {
 "address": "123 Main Street, City, Province",
 "createdAt": "2025-08-26T22:47:34+08:00",
@@ -50,3 +51,4 @@
 "role": "employee",
 "uid": "hGRjJlXZ3pQ05480sVIdFcZHnrJ3"
 }
+```

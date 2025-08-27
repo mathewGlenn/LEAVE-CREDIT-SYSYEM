@@ -5,13 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LCMS - Leave Approval</title>
     <link rel="stylesheet" href="../CSS/Leave.css">
-            <link rel="stylesheet" href="../CSS/sidebar.css">
+    <link rel="stylesheet" href="../CSS/sidebar.css">
 
-        <!-- Load sidebar script -->
+    <!-- SweetAlert2 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- SweetAlert Custom CSS -->
+    <link rel="stylesheet" href="../CSS/sweetalert-custom.css">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    
+    <!-- Firebase Initialization -->
+    <script src="../js/firebase-init.js"></script>
+    <script src="../js/auth-utils.js"></script>
+    
+    <!-- SweetAlert Utility Functions -->
+    <script src="../js/sweetalert-utils.js"></script>
+
+    <!-- Load sidebar script -->
     <script src="../components/sidebar-loader.js"></script>
     <script>
         // Call the loadSidebar function when the page loads
         document.addEventListener('DOMContentLoaded', function() {
+            // Check authentication first
+            checkAuthAndRole('hr');
+            
             loadSidebar('hr');
         });
     </script>

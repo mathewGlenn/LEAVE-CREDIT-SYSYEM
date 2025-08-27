@@ -6,6 +6,11 @@
     <title>LCMS - Supervisor Dashboard</title>
     <link rel="stylesheet" href="../CSS/sidebar.css">
     
+    <!-- SweetAlert2 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- SweetAlert Custom CSS -->
+    <link rel="stylesheet" href="../CSS/sweetalert-custom.css">
+    
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
@@ -16,39 +21,18 @@
     <script src="../js/firebase-init.js"></script>
     <script src="../js/auth-utils.js"></script>
     
+    <!-- SweetAlert Utility Functions -->
+    <script src="../js/sweetalert-utils.js"></script>
+    
     <style>
         body {
             margin: 0;
             padding: 0;
             font-family: Arial, sans-serif;
             background-color: #e6f3f5;
-            display: flex;
         }
 
-        .sidebar {
-            width: 250px;
-            background: linear-gradient(145deg, #8395a7 0%, #576574 100%);
-            height: 100vh;
-            padding: 20px;
-        }
-
-        .logo {
-            color: #2c3e50;
-            font-size: 32px;
-            font-weight: bold;
-            margin-bottom: 10px;
-            padding: 20px;
-        }
-
-        .campus-name {
-            color: #34495e;
-            font-size: 16px;
-            padding: 10px;
-            background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            text-align: center;
-            margin-bottom: 30px;
-        }
+        /* Remove the duplicate sidebar styles since they're in sidebar.css */
 
         .menu-item {
             background-color: rgba(230, 243, 245, 0.9);
@@ -67,11 +51,13 @@
         }
 
         .main-content {
-            flex: 1;
+            margin-left: 250px;
             padding: 30px;
             display: flex;
             justify-content: center;
             align-items: flex-start;
+            min-height: 100vh;
+            transition: margin-left 0.3s ease;
         }
 
         .supervisor-container {
@@ -126,6 +112,43 @@
             color: #7f8c8d;
             font-size: 14px;
             text-transform: uppercase;
+        }
+
+        /* Responsive design for mobile devices */
+        @media (max-width: 768px) {
+            .main-content {
+                margin-left: 0;
+                padding: 15px;
+            }
+            
+            .supervisor-container {
+                width: 100%;
+                padding: 20px;
+            }
+            
+            .stats-container {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .stat-number {
+                font-size: 28px;
+            }
+            
+            .dashboard-title {
+                font-size: 18px;
+                padding: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 10px;
+            }
+            
+            .supervisor-container {
+                padding: 15px;
+            }
         }
     </style>
 </head>

@@ -1,0 +1,212 @@
+/* SweetAlert Custom Styles for LCMS */
+
+/* Main alert popup styling */
+.lcms-alert {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    background-color: #e6f3f5 !important;
+}
+
+/* Override SweetAlert default background */
+.swal2-popup {
+    background-color: #e6f3f5 !important;
+}
+
+/* Alert title styling */
+.lcms-alert-title {
+    color: #333;
+    font-weight: 600;
+    font-size: 1.5em;
+    margin-bottom: 10px;
+}
+
+/* Alert content styling */
+.lcms-alert-content {
+    color: #666;
+    font-size: 1em;
+    line-height: 1.4;
+}
+
+/* Form dialog specific styles */
+.lcms-form-dialog {
+    width: 500px;
+    background-color: #e6f3f5 !important;
+}
+
+.lcms-form-fields {
+    text-align: left;
+}
+
+.swal2-input-group {
+    margin-bottom: 15px;
+}
+
+.swal2-input-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+    font-weight: 500;
+    font-size: 0.9em;
+}
+
+.lcms-form-dialog .swal2-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+    margin: 0;
+    box-sizing: border-box;
+    background-color: #fff;
+}
+
+.lcms-form-dialog .swal2-input:focus {
+    border-color: #4CAF50;
+    outline: none;
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
+}
+
+/* Custom button colors for LCMS theme */
+.swal2-confirm {
+    background-color: #4CAF50 !important;
+    border: none !important;
+    border-radius: 5px !important;
+    padding: 10px 25px !important;
+    font-weight: 500 !important;
+}
+
+.swal2-cancel {
+    background-color: #f44336 !important;
+    border: none !important;
+    border-radius: 5px !important;
+    padding: 10px 25px !important;
+    font-weight: 500 !important;
+}
+
+.swal2-confirm:hover {
+    background-color: #45a049 !important;
+}
+
+.swal2-cancel:hover {
+    background-color: #da190b !important;
+}
+
+/* Toast notification styles */
+.swal2-toast {
+    background-color: #e6f3f5 !important;
+}
+
+.swal2-toast .swal2-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: #333;
+}
+
+/* Loading dialog background */
+.swal2-popup.swal2-loading {
+    background-color: #e6f3f5 !important;
+}
+
+/* Loading spinner customization */
+.swal2-loader {
+    border-left-color: #4CAF50 !important;
+    border-bottom-color: #4CAF50 !important;
+}
+
+/* Icon customization */
+.swal2-success .swal2-success-ring {
+    border-color: #4CAF50 !important;
+}
+
+.swal2-success .swal2-success-fix {
+    background-color: #4CAF50 !important;
+}
+
+.swal2-success .swal2-success-circular-line-right {
+    background-color: #4CAF50 !important;
+}
+
+.swal2-success .swal2-success-circular-line-left {
+    background-color: #4CAF50 !important;
+}
+
+.swal2-error .swal2-error-x .swal2-error-line {
+    background-color: #f44336 !important;
+}
+
+.swal2-warning .swal2-warning-outline {
+    border-color: #ff9800 !important;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .lcms-form-dialog {
+        width: 90%;
+        max-width: 400px;
+    }
+    
+    .lcms-alert-title {
+        font-size: 1.3em;
+    }
+    
+    .swal2-confirm, .swal2-cancel {
+        padding: 8px 20px !important;
+        font-size: 14px !important;
+    }
+}
+
+/* Animation customization */
+.swal2-show {
+    animation: swal2-show-custom 0.3s ease-out;
+}
+
+@keyframes swal2-show-custom {
+    0% {
+        transform: scale(0.7);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Dark mode support (optional for future implementation) */
+@media (prefers-color-scheme: dark) {
+    .lcms-alert,
+    .swal2-popup {
+        background-color: #e6f3f5 !important;
+        color: #333;
+    }
+    
+    .lcms-alert-title {
+        color: #333;
+    }
+    
+    .lcms-alert-content {
+        color: #666;
+    }
+    
+    .lcms-form-dialog .swal2-input {
+        background-color: #fff;
+        border-color: #ddd;
+        color: #333;
+    }
+    
+    .lcms-form-dialog .swal2-input:focus {
+        border-color: #4CAF50;
+    }
+    
+    .swal2-input-group label {
+        color: #333;
+    }
+    
+    .swal2-toast {
+        background-color: #e6f3f5 !important;
+    }
+    
+    .swal2-toast .swal2-title {
+        color: #333;
+    }
+}

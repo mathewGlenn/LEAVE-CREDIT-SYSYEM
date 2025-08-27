@@ -27,6 +27,9 @@ function loadSidebar(role) {
 
                 // Load user information after sidebar is loaded
                 loadUserInfo();
+
+                // Setup mobile menu functionality
+                setupMobileMenu();
             }
         }
     };
@@ -137,18 +140,112 @@ function waitForFirebase(callback, maxAttempts = 10) {
  * Handle user logout
  */
 function handleLogout() {
-    if (confirm('Are you sure you want to logout?')) {
-        waitForFirebase(() => {
-            // Sign out from Firebase
-            firebase.auth().signOut().then(() => {
-                // Clear local storage
-                localStorage.clear();
-                // Redirect to home page
-                window.location.href = '../index.html';
-            }).catch((error) => {
-                console.error('Sign out error:', error);
-                alert('Error signing out. Please try again.');
-            });
+    // Check if SweetAlert is available
+    if (typeof Swal !== 'undefined') {
+        // Use SweetAlert for logout confirmation
+        showLogoutConfirmation(() => {
+            performLogout();
         });
+    } else {
+        // Fallback to standard confirm dialog
+        if (confirm('Are you sure you want to logout?')) {
+            performLogout();
+        }
     }
+}
+
+/**
+ * Perform the actual logout process
+ */
+function performLogout() {
+    waitForFirebase(() => {
+        // Show loading dialog if SweetAlert is available
+        if (typeof Swal !== 'undefined') {
+            showLoadingDialog('Logging out', 'Please wait...');
+        }
+
+        // Sign out from Firebase
+        firebase.auth().signOut().then(() => {
+            // Clear local storage
+            localStorage.clear();
+
+            // Close any open dialogs
+            if (typeof Swal !== 'undefined') {
+                closeDialog();
+            }
+
+            // Redirect to home page
+            window.location.href = '../index.html';
+        }).catch((error) => {
+            console.error('Sign out error:', error);
+
+            // Close loading dialog and show error
+            if (typeof Swal !== 'undefined') {
+                closeDialog();
+                showErrorAlert('Logout Error', 'Error signing out. Please try again.');
+            } else {
+                alert('Error signing out. Please try again.');
+            }
+        });
+    });
+}
+
+/**
+ * Setup mobile menu functionality
+ */
+function setupMobileMenu() {
+    // Create mobile menu toggle button if it doesn't exist
+    if (window.innerWidth <= 768 && !document.querySelector('.mobile-menu-toggle')) {
+        const toggleButton = document.createElement('button');
+        toggleButton.className = 'mobile-menu-toggle';
+        toggleButton.innerHTML = '☰';
+        toggleButton.setAttribute('aria-label', 'Toggle menu');
+
+        // Add click event to toggle sidebar
+        toggleButton.addEventListener('click', function () {
+            const sidebar = document.querySelector('.sidebar');
+            if (sidebar) {
+                sidebar.classList.toggle('mobile-open');
+            }
+        });
+
+        // Insert the button at the beginning of the body
+        document.body.insertBefore(toggleButton, document.body.firstChild);
+    }
+
+    // Close sidebar when clicking outside on mobile
+    document.addEventListener('click', function (event) {
+        if (window.innerWidth <= 768) {
+            const sidebar = document.querySelector('.sidebar');
+            const toggleButton = document.querySelector('.mobile-menu-toggle');
+
+            if (sidebar && sidebar.classList.contains('mobile-open')) {
+                // If click is outside sidebar and not on toggle button
+                if (!sidebar.contains(event.target) && event.target !== toggleButton) {
+                    sidebar.classList.remove('mobile-open');
+                }
+            }
+        }
+    });
+
+    // Handle window resize
+    window.addEventListener('resize', function () {
+        const sidebar = document.querySelector('.sidebar');
+        const toggleButton = document.querySelector('.mobile-menu-toggle');
+
+        if (window.innerWidth > 768) {
+            // Desktop view - remove mobile classes and toggle button
+            if (sidebar) {
+                sidebar.classList.remove('mobile-open');
+            }
+            if (toggleButton) {
+                toggleButton.style.display = 'none';
+            }
+        } else {
+            // Mobile view - show toggle button
+            if (toggleButton) {
+                toggleButton.style.display = 'block';
+            }
+        }
+    });
 }

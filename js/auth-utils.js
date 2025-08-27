@@ -46,32 +46,96 @@ function checkAuthAndRoleRoot(requiredRole) {
 
 // Sign out function
 function signOut() {
-    if (confirm('Are you sure you want to logout?')) {
-        firebase.auth().signOut().then(() => {
-            // Clear local storage
-            localStorage.clear();
-            // Redirect to home page
-            window.location.href = '../index.html';
-        }).catch((error) => {
-            console.error('Sign out error:', error);
-            alert('Error signing out. Please try again.');
+    // Check if SweetAlert is available
+    if (typeof Swal !== 'undefined') {
+        // Use SweetAlert for logout confirmation
+        showLogoutConfirmation(() => {
+            performSignOut();
         });
+    } else {
+        // Fallback to standard confirm dialog
+        if (confirm('Are you sure you want to logout?')) {
+            performSignOut();
+        }
     }
 }
 
 // Sign out function for root directory pages
 function signOutRoot() {
-    if (confirm('Are you sure you want to logout?')) {
-        firebase.auth().signOut().then(() => {
-            // Clear local storage
-            localStorage.clear();
-            // Redirect to home page
-            window.location.href = 'index.html';
-        }).catch((error) => {
-            console.error('Sign out error:', error);
-            alert('Error signing out. Please try again.');
+    // Check if SweetAlert is available
+    if (typeof Swal !== 'undefined') {
+        // Use SweetAlert for logout confirmation
+        showLogoutConfirmation(() => {
+            performSignOutRoot();
         });
+    } else {
+        // Fallback to standard confirm dialog
+        if (confirm('Are you sure you want to logout?')) {
+            performSignOutRoot();
+        }
     }
+}
+
+// Perform actual sign out process
+function performSignOut() {
+    // Show loading dialog if SweetAlert is available
+    if (typeof Swal !== 'undefined') {
+        showLoadingDialog('Logging out', 'Please wait...');
+    }
+
+    firebase.auth().signOut().then(() => {
+        // Clear local storage
+        localStorage.clear();
+
+        // Close any open dialogs
+        if (typeof Swal !== 'undefined') {
+            closeDialog();
+        }
+
+        // Redirect to home page
+        window.location.href = '../index.html';
+    }).catch((error) => {
+        console.error('Sign out error:', error);
+
+        // Close loading dialog and show error
+        if (typeof Swal !== 'undefined') {
+            closeDialog();
+            showErrorAlert('Logout Error', 'Error signing out. Please try again.');
+        } else {
+            alert('Error signing out. Please try again.');
+        }
+    });
+}
+
+// Perform actual sign out process for root directory
+function performSignOutRoot() {
+    // Show loading dialog if SweetAlert is available
+    if (typeof Swal !== 'undefined') {
+        showLoadingDialog('Logging out', 'Please wait...');
+    }
+
+    firebase.auth().signOut().then(() => {
+        // Clear local storage
+        localStorage.clear();
+
+        // Close any open dialogs
+        if (typeof Swal !== 'undefined') {
+            closeDialog();
+        }
+
+        // Redirect to home page
+        window.location.href = 'index.html';
+    }).catch((error) => {
+        console.error('Sign out error:', error);
+
+        // Close loading dialog and show error
+        if (typeof Swal !== 'undefined') {
+            closeDialog();
+            showErrorAlert('Logout Error', 'Error signing out. Please try again.');
+        } else {
+            alert('Error signing out. Please try again.');
+        }
+    });
 }
 
 // Get current user info
