@@ -22,6 +22,10 @@ body {
         .section-title {
             background-color: #c7ecee;
             color: #2c3e50;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
             padding: 10px 20px;
             border-radius: 10px;
             margin-bottom: 15px;

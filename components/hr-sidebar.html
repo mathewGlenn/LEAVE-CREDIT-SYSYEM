@@ -1,34 +1,39 @@
 <!-- HR Sidebar Component -->
 <div class="sidebar">
-    <div class="logo">
-        <img src="../img/lcms_isu_campus.png" alt="" style="width: 100%;">
-    </div>
-    <div class="user-info">
-        <div class="user-name" id="sidebar-user-name">Loading...</div>
-        <div class="user-role">HR Administrator</div>
-    </div>
-    <a href="../HR_HTML/HR.html" class="menu-item">DASHBOARD</a>
-    <a href="../HR_HTML/Leave_Approval.html" class="menu-item">LEAVE APPROVAL</a>
-    <a href="../HR_HTML/Manage_Employee.html" class="menu-item">MANAGE EMPLOYEES</a>
-    <a href="../HR_HTML/Track_Employee.html" class="menu-item">TRACK EMPLOYEES</a>
-    <a href="../HR_HTML/HR_Reports.html" class="menu-item">REPORTS</a>
-    <a href="#" class="menu-item logout-btn">LOGOUT</a>
+  <div class="logo">
+    <img src="../img/lcms_isu_campus.png" alt="" style="width: 100%" />
+  </div>
+  <div class="user-info">
+    <div class="user-name" id="sidebar-user-name">Loading...</div>
+    <div class="user-role">HR Administrator</div>
+  </div>
+  <a href="../HR_HTML/HR.html" class="menu-item">DASHBOARD</a>
+  <a href="../HR_HTML/Leave_Approval.html" class="menu-item">LEAVE APPROVAL</a>
+  <a href="../HR_HTML/Manage_Employee.html" class="menu-item"
+    >MANAGE EMPLOYEES</a
+  >
+  <a href="../HR_HTML/Track_Employee.html" class="menu-item">TRACK EMPLOYEES</a>
+  <a href="../HR_HTML/Manage_Departments.html" class="menu-item"
+    >MANAGE DEPARTMENTS</a
+  >
+  <a href="../HR_HTML/HR_Reports.html" class="menu-item">REPORTS</a>
+  <a href="#" class="menu-item logout-btn">LOGOUT</a>
 </div>
 
 <script>
-    // Note: User information is now loaded by sidebar-loader.js
-    
-    // Get the current page filename
-    const currentPage = window.location.pathname.split('/').pop();
-    
-    // Add active class to current page's menu item
-    document.querySelectorAll('.sidebar .menu-item').forEach(item => {
-        if (!item.getAttribute('href')) return; // Skip if not a link (e.g., separator)
-        
-        const itemPath = item.getAttribute('href').split('/').pop();
-        if (itemPath === currentPage) {
-            item.classList.add('active');
-            console.log('Active menu item: ' + currentPage);
-        }
-    });
+  // Note: User information is now loaded by sidebar-loader.js
+
+  // Get the current page filename
+  const currentPage = window.location.pathname.split("/").pop();
+
+  // Add active class to current page's menu item
+  document.querySelectorAll(".sidebar .menu-item").forEach((item) => {
+    if (!item.getAttribute("href")) return; // Skip if not a link (e.g., separator)
+
+    const itemPath = item.getAttribute("href").split("/").pop();
+    if (itemPath === currentPage) {
+      item.classList.add("active");
+      console.log("Active menu item: " + currentPage);
+    }
+  });
 </script>

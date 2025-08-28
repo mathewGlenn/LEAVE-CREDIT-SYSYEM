@@ -98,7 +98,10 @@
                 </div>
                 <div class="form-group">
                   <label>Department:</label>
-                  <input type="text" id="emp-department" required />
+                  <select id="emp-department" required>
+                    <option value="">Select Department</option>
+                    <!-- Departments will be loaded from database -->
+                  </select>
                 </div>
                 <div class="form-group">
                   <label>Designation:</label>
@@ -258,7 +261,10 @@
                 </div>
                 <div class="form-group">
                   <label>Department:</label>
-                  <input type="text" id="edit-emp-department" required />
+                  <select id="edit-emp-department" required>
+                    <option value="">Select Department</option>
+                    <!-- Departments will be loaded from database -->
+                  </select>
                 </div>
                 <div class="form-group">
                   <label>Designation:</label>
@@ -305,6 +311,9 @@
         // Load sidebar
         loadSidebar("hr");
 
+        // Load departments for dropdowns
+        loadDepartments();
+
         // Load employees from Firestore
         loadEmployees();
 
@@ -318,6 +327,7 @@
         document
           .getElementById("add-employee-btn")
           .addEventListener("click", function () {
+            loadDepartments(); // Refresh departments when modal opens
             document.getElementById("add-employee-modal").style.display =
               "block";
           });
@@ -370,6 +380,44 @@
             console.error("Error loading employees:", error);
             tableBody.innerHTML =
               '<tr><td colspan="5">Error loading employees</td></tr>';
+          });
+      }
+
+      // Load departments from Firestore for dropdown
+      function loadDepartments() {
+        const addDeptSelect = document.getElementById("emp-department");
+        const editDeptSelect = document.getElementById("edit-emp-department");
+
+        // Clear existing options except the first one
+        addDeptSelect.innerHTML = '<option value="">Select Department</option>';
+        editDeptSelect.innerHTML =
+          '<option value="">Select Department</option>';
+
+        db.collection("departments")
+          .orderBy("name")
+          .get()
+          .then((querySnapshot) => {
+            if (querySnapshot.empty) {
+              console.log("No departments found");
+              return;
+            }
+
+            querySnapshot.forEach((doc) => {
+              const department = doc.data();
+              const optionAdd = new Option(department.name, department.name);
+              const optionEdit = new Option(department.name, department.name);
+
+              addDeptSelect.add(optionAdd);
+              editDeptSelect.add(optionEdit);
+            });
+          })
+          .catch((error) => {
+            console.error("Error loading departments:", error);
+            // Add a fallback option if departments can't be loaded
+            const fallbackAdd = new Option("Error loading departments", "");
+            const fallbackEdit = new Option("Error loading departments", "");
+            addDeptSelect.add(fallbackAdd);
+            editDeptSelect.add(fallbackEdit);
           });
       }
 
@@ -449,6 +497,11 @@
         };
 
         try {
+          showLoadingDialog(
+            "Creating Employee",
+            "Please wait while we create the employee account..."
+          );
+
           // Create Firebase Auth user
           const userCredential = await firebase
             .auth()
@@ -470,12 +523,19 @@
             uid: userId,
           });
 
-          alert("Employee created successfully with leave credits!");
-          closeAddModal();
-          loadEmployees(); // Reload the table
+          closeDialog();
+          showSuccessAlert(
+            "Success",
+            "Employee created successfully with leave credits!",
+            () => {
+              closeAddModal();
+              loadEmployees(); // Reload the table
+            }
+          );
         } catch (error) {
           console.error("Error adding employee:", error);
-          alert("Error creating employee: " + error.message);
+          closeDialog();
+          showErrorAlert("Error", "Error creating employee: " + error.message);
         }
       }
 
