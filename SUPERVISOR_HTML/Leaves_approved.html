@@ -4,17 +4,53 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>LCMS - Approved Leaves</title>
+    <link rel="stylesheet" href="../CSS/Leave_status.css" />
     <link rel="stylesheet" href="../CSS/sidebar.css" />
-    <link rel="stylesheet" href="../CSS/Employee.css" />
+
+    <!-- SweetAlert2 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- SweetAlert Custom CSS -->
+    <link rel="stylesheet" href="../CSS/sweetalert-custom.css" />
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+    <!-- Firebase Configuration -->
+    <script src="../js/firebase-init.js"></script>
+    <script src="../js/auth-utils.js"></script>
+
+    <!-- SweetAlert Utility Functions -->
+    <script src="../js/sweetalert-utils.js"></script>
+
+    <!-- Supervisor Leave Manager -->
+    <script src="../js/supervisor-leave-manager.js"></script>
+
+    <!-- Load sidebar script -->
+    <script src="../components/sidebar-loader.js"></script>
+    <script>
+      // Initialize page
+      document.addEventListener("DOMContentLoaded", function () {
+        // Check authentication first
+        checkAuthAndRole("supervisor");
+
+        // Load sidebar
+        loadSidebar("supervisor");
+
+        // Initialize supervisor leave manager and load approved requests
+        const leaveManager = new SupervisorLeaveManager();
+        leaveManager.displayApprovedRequests();
+      });
+    </script>
   </head>
   <body>
-    <!-- Sidebar placeholder that will be filled by the JavaScript -->
     <div id="sidebar-placeholder"></div>
 
-    <div class="main-content flex-center">
-      <div class="approved-container">
-        <div class="approved-title">APPROVED LEAVES</div>
-        <table class="approved-table">
+    <div class="main-content">
+      <div class="status-container">
+        <div class="status-title">SUPERVISOR APPROVED LEAVES</div>
+        <table class="approved-table status-table">
           <thead>
             <tr>
               <th>EMPLOYEE NAME</th>
@@ -30,50 +66,13 @@
           </thead>
           <tbody>
             <tr>
-              <td>John Doe</td>
-              <td>IT Department</td>
-              <td>Vacation Leave</td>
-              <td>2025-05-15</td>
-              <td>2025-05-20</td>
-              <td>5</td>
-              <td>Annual vacation</td>
-              <td>2025-05-01</td>
-              <td><span class="status-badge">Approved</span></td>
-            </tr>
-            <tr>
-              <td>Jane Smith</td>
-              <td>HR Department</td>
-              <td>Sick Leave</td>
-              <td>2025-05-25</td>
-              <td>2025-05-26</td>
-              <td>2</td>
-              <td>Medical checkup</td>
-              <td>2025-05-10</td>
-              <td><span class="status-badge">Approved</span></td>
-            </tr>
-            <tr>
-              <td>Mike Johnson</td>
-              <td>Finance Department</td>
-              <td>Emergency Leave</td>
-              <td>2025-06-01</td>
-              <td>2025-06-02</td>
-              <td>1</td>
-              <td>Family emergency</td>
-              <td>2025-05-31</td>
-              <td><span class="status-badge">Approved</span></td>
+              <td colspan="9" style="text-align: center; padding: 20px">
+                Loading...
+              </td>
             </tr>
           </tbody>
         </table>
       </div>
     </div>
-
-    <!-- Load sidebar script -->
-    <script src="../components/sidebar-loader.js"></script>
-    <script>
-      // Call the loadSidebar function when the page loads
-      document.addEventListener("DOMContentLoaded", function () {
-        loadSidebar("supervisor");
-      });
-    </script>
   </body>
 </html>

@@ -121,3 +121,47 @@ body {
         .status-table tbody tr:hover {
             background-color: #f8f9fa;
         }
+
+        /* Action buttons for tables */
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .approve-btn,
+        .reject-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+        }
+
+        .approve-btn {
+            background-color: #c7ecee;
+            color: #2c3e50;
+        }
+
+        .reject-btn {
+            background-color: #ff7675;
+            color: white;
+        }
+
+        .approve-btn:hover {
+            background-color: #a3e4f3;
+        }
+
+        .reject-btn:hover {
+            background-color: #e55555;
+        }
+
+        /* Reason cell styling */
+        .reason-cell {
+            max-width: 150px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }

@@ -4,68 +4,73 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>LCMS - Leave History</title>
+    <link rel="stylesheet" href="../CSS/Leave_history.css" />
     <link rel="stylesheet" href="../CSS/sidebar.css" />
-    <link rel="stylesheet" href="../CSS/Employee.css" />
+
+    <!-- SweetAlert2 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- SweetAlert Custom CSS -->
+    <link rel="stylesheet" href="../CSS/sweetalert-custom.css" />
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+    <!-- Firebase Configuration -->
+    <script src="../js/firebase-init.js"></script>
+    <script src="../js/auth-utils.js"></script>
+
+    <!-- SweetAlert Utility Functions -->
+    <script src="../js/sweetalert-utils.js"></script>
+
+    <!-- Leave Display Manager -->
+    <script src="../js/leave-display-manager.js"></script>
+    <script src="../js/supervisor-leave-display-manager.js"></script>
+
+    <!-- Load sidebar script -->
+    <script src="../components/sidebar-loader.js"></script>
+    <script>
+      // Initialize page
+      document.addEventListener("DOMContentLoaded", function () {
+        // Check authentication first
+        checkAuthAndRole("supervisor");
+
+        // Load sidebar
+        loadSidebar("supervisor");
+
+        // Initialize leave display manager and load history
+        const leaveDisplay = new SupervisorLeaveDisplayManager();
+        leaveDisplay.displayLeaveHistory();
+      });
+    </script>
   </head>
   <body>
-    <!-- Sidebar placeholder that will be filled by the JavaScript -->
     <div id="sidebar-placeholder"></div>
 
-    <div class="main-content flex-center">
-      <div class="history-container">
-        <div class="history-title">LEAVE HISTORY</div>
-        <table class="history-table">
+    <div class="main-content">
+      <div class="status-container">
+        <div class="status-title">LEAVE HISTORY</div>
+        <table class="status-table">
           <thead>
             <tr>
-              <th>LEAVE TYPE</th>
+              <th>TYPES OF LEAVE</th>
+              <th>DAYS</th>
+              <th>LEAVE DETAIL</th>
               <th>START DATE</th>
               <th>END DATE</th>
-              <th>DAYS TAKEN</th>
-              <th>REASON</th>
-              <th>DATE APPROVED</th>
               <th>STATUS</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>Vacation Leave</td>
-              <td>2025-01-15</td>
-              <td>2025-01-20</td>
-              <td>5</td>
-              <td>Annual family vacation</td>
-              <td>2025-01-05</td>
-              <td><span class="status-badge">Completed</span></td>
-            </tr>
-            <tr>
-              <td>Sick Leave</td>
-              <td>2025-03-10</td>
-              <td>2025-03-12</td>
-              <td>2</td>
-              <td>Medical checkup</td>
-              <td>2025-03-05</td>
-              <td><span class="status-badge">Completed</span></td>
-            </tr>
-            <tr>
-              <td>Emergency Leave</td>
-              <td>2025-05-01</td>
-              <td>2025-05-01</td>
-              <td>1</td>
-              <td>Family matter</td>
-              <td>2025-05-01</td>
-              <td><span class="status-badge">Completed</span></td>
+              <td colspan="6" style="text-align: center; padding: 20px">
+                Loading...
+              </td>
             </tr>
           </tbody>
         </table>
       </div>
     </div>
-
-    <!-- Load sidebar script -->
-    <script src="../components/sidebar-loader.js"></script>
-    <script>
-      // Call the loadSidebar function when the page loads
-      document.addEventListener("DOMContentLoaded", function () {
-        loadSidebar("supervisor");
-      });
-    </script>
   </body>
 </html>
