@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sidebar Styling Test</title>
+    <link rel="stylesheet" href="CSS/sidebar.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+      }
+      .main-content {
+        margin-left: 250px;
+        padding: 20px;
+      }
+      @media (max-width: 768px) {
+        .main-content {
+          margin-left: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Include supervisor sidebar for testing -->
+    <div id="sidebar-placeholder"></div>
+
+    <div class="main-content">
+      <h1>Sidebar Styling Test</h1>
+      <p>
+        This page is for testing the updated sidebar styling with subtle line
+        separators.
+      </p>
+      <p>The sidebar now features:</p>
+      <ul>
+        <li>Transparent menu items with subtle line separators</li>
+        <li>Clean hover effects with left border indicators</li>
+        <li>Active state highlighting with white left border</li>
+        <li>Minimalist design without button-like appearance</li>
+      </ul>
+    </div>
+
+    <script src="components/sidebar-loader.js"></script>
+    <script>
+      // Load supervisor sidebar
+      fetch("components/supervisor-sidebar.html")
+        .then((response) => response.text())
+        .then((html) => {
+          document.getElementById("sidebar-placeholder").innerHTML = html;
+        })
+        .catch((error) => console.error("Error loading sidebar:", error));
+    </script>
+  </body>
+</html>
