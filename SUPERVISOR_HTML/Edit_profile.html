@@ -2,68 +2,333 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LCMS - Edit Profile</title>
     <link rel="stylesheet" href="../CSS/sidebar.css" />
     <link rel="stylesheet" href="../CSS/Employee.css" />
     <link rel="stylesheet" href="../CSS/main.css" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>LCMS - Edit Profile</title>
+
+    <!-- SweetAlert2 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- SweetAlert Custom CSS -->
+    <link rel="stylesheet" href="../CSS/sweetalert-custom.css" />
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics-compat.js"></script>
+
+    <!-- Firebase Initialization -->
+    <script src="../js/firebase-init.js"></script>
+    <script src="../js/auth-utils.js"></script>
+
+    <!-- SweetAlert Utility Functions -->
+    <script src="../js/sweetalert-utils.js"></script>
+
     <!-- Load sidebar script -->
     <script src="../components/sidebar-loader.js"></script>
     <script>
       // Call the loadSidebar function when the page loads
       document.addEventListener("DOMContentLoaded", function () {
+        // Check authentication first
+        checkAuthAndRole("supervisor");
+
+        // Load sidebar
         loadSidebar("supervisor");
+
+        // Load user profile data
+        loadUserProfile();
+
+        // Add event listener to form
+        document
+          .getElementById("profileForm")
+          .addEventListener("submit", updateUserProfile);
       });
+
+      // Function to load user profile data from Firebase
+      async function loadUserProfile() {
+        try {
+          // Wait for Firebase Auth to be ready
+          firebase.auth().onAuthStateChanged(async (user) => {
+            if (user) {
+              const uid = user.uid;
+
+              // Get user document from Firestore (supervisors are in employees collection)
+              const userDoc = await firebase
+                .firestore()
+                .collection("employees")
+                .doc(uid)
+                .get();
+
+              if (userDoc.exists) {
+                const userData = userDoc.data();
+                console.log("User data loaded:", userData);
+                populateForm(userData);
+              } else {
+                console.log("No user document found");
+                showToast("error", "Profile data not found");
+              }
+            } else {
+              console.log("User not authenticated");
+              // Redirect to login if not authenticated
+              window.location.href = "../login.html";
+            }
+          });
+        } catch (error) {
+          console.error("Error loading user profile:", error);
+          showToast("error", "Failed to load profile data");
+        }
+      }
+
+      // Function to populate form fields with user data
+      function populateForm(userData) {
+        try {
+          // Hide loading indicator and show form content
+          document.getElementById("loadingIndicator").style.display = "none";
+          document.getElementById("formContent").style.display = "block";
+
+          // Split the full name into first and last name
+          const fullName = userData.name || "";
+          const nameParts = fullName.split(" ");
+          const firstName = nameParts[0] || "";
+          const lastName = nameParts.slice(1).join(" ") || "";
+
+          // Populate form fields
+          document.getElementById("firstName").value = firstName;
+          document.getElementById("lastName").value = lastName;
+          document.getElementById("email").value = userData.email || "";
+          document.getElementById("phoneNumber").value = userData.phone || "";
+          document.getElementById("address").value = userData.address || "";
+          document.getElementById("designation").value =
+            userData.designation || "";
+          document.getElementById("department").value =
+            userData.department || "";
+
+          // Handle gender selection (convert to proper case for select options)
+          const gender = userData.gender || "";
+          const genderSelect = document.getElementById("gender");
+          if (gender) {
+            // Convert gender to match option values (e.g., "MALE" -> "Male")
+            const genderFormatted =
+              gender.charAt(0).toUpperCase() + gender.slice(1).toLowerCase();
+            genderSelect.value = genderFormatted;
+          }
+
+          console.log("Form populated successfully");
+        } catch (error) {
+          console.error("Error populating form:", error);
+          showToast("error", "Failed to populate form fields");
+
+          // Hide loading indicator and show form content even on error
+          document.getElementById("loadingIndicator").style.display = "none";
+          document.getElementById("formContent").style.display = "block";
+        }
+      }
+
+      // Function to handle form submission and update user data
+      async function updateUserProfile(event) {
+        event.preventDefault();
+
+        const saveButton = document.getElementById("saveButton");
+        const originalText = saveButton.textContent;
+
+        try {
+          // Show loading state
+          saveButton.disabled = true;
+          saveButton.innerHTML =
+            '<div class="loading-spinner" style="width: 16px; height: 16px; margin-right: 8px;"></div>Saving...';
+
+          const user = firebase.auth().currentUser;
+          if (!user) {
+            showToast("error", "User not authenticated");
+            return;
+          }
+
+          // Get form data
+          const firstName = document.getElementById("firstName").value.trim();
+          const lastName = document.getElementById("lastName").value.trim();
+          const fullName = `${firstName} ${lastName}`.trim();
+          const email = document.getElementById("email").value.trim();
+          const phone = document.getElementById("phoneNumber").value.trim();
+          const address = document.getElementById("address").value.trim();
+          const designation = document
+            .getElementById("designation")
+            .value.trim();
+          const department = document.getElementById("department").value.trim();
+          const gender = document.getElementById("gender").value;
+
+          // Validate required fields
+          if (!firstName || !lastName || !email) {
+            showToast("error", "Please fill in all required fields");
+            return;
+          }
+
+          // Update user document in Firestore
+          const updateData = {
+            name: fullName,
+            email: email,
+            phone: phone,
+            address: address,
+            designation: designation,
+            department: department,
+            gender: gender.toUpperCase(),
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+          };
+
+          await firebase
+            .firestore()
+            .collection("employees")
+            .doc(user.uid)
+            .update(updateData);
+
+          showToast("success", "Profile updated successfully!");
+          console.log("Profile updated successfully");
+
+          // Optionally redirect back to profile view after a delay
+          setTimeout(() => {
+            window.location.href = "supervisor-profile-view.html";
+          }, 2000);
+        } catch (error) {
+          console.error("Error updating profile:", error);
+          showToast("error", "Failed to update profile");
+        } finally {
+          // Reset button state
+          saveButton.disabled = false;
+          saveButton.textContent = originalText;
+        }
+      }
     </script>
   </head>
   <body>
+    <!-- Sidebar placeholder that will be filled by the JavaScript -->
     <div id="sidebar-placeholder"></div>
-    <div class="main-content flex-center">
-      <form class="form-container">
-        <div class="form-title">SUPERVISOR PROFILE</div>
-        <div class="form-row">
-          <div class="form-group">
-            <label for="firstName">FIRST NAME</label>
-            <input type="text" id="firstName" name="firstName" />
+    <div class="main-content">
+      <!-- Back to Profile Button -->
+      <div style="margin-bottom: 20px">
+        <button
+          onclick="window.location.href='supervisor-profile-view.html'"
+          class="back-button"
+        >
+          ← Back to Profile
+        </button>
+      </div>
+
+      <form id="profileForm">
+        <div class="form-title">EDIT SUPERVISOR PROFILE</div>
+
+        <!-- Loading indicator -->
+        <div id="loadingIndicator" class="loading-container">
+          <div class="loading-spinner"></div>
+          <p>Loading profile data...</p>
+        </div>
+
+        <!-- Form content - initially hidden -->
+        <div id="formContent" style="display: none">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="firstName">FIRST NAME</label>
+              <input type="text" id="firstName" name="firstName" required />
+            </div>
+            <div class="form-group">
+              <label for="lastName">LAST NAME</label>
+              <input type="text" id="lastName" name="lastName" required />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="gender">GENDER</label>
+              <select id="gender" name="gender">
+                <option value="" disabled selected>Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="phoneNumber">PHONE NUMBER</label>
+              <input type="text" id="phoneNumber" name="phoneNumber" />
+            </div>
           </div>
           <div class="form-group">
-            <label for="lastName">LAST NAME</label>
-            <input type="text" id="lastName" name="lastName" />
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label for="gender">GENDER</label>
-            <select id="gender" name="gender">
-              <option value="" disabled selected>Select Gender</option>
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-              <option value="Other">Other</option>
-            </select>
+            <label for="email">EMAIL ADDRESS</label>
+            <input type="email" id="email" name="email" required />
           </div>
           <div class="form-group">
-            <label for="phoneNumber">PHONE NUMBER</label>
-            <input type="text" id="phoneNumber" name="phoneNumber" />
+            <label for="address">HOME ADDRESS</label>
+            <input type="text" id="address" name="address" />
           </div>
+          <div class="form-group">
+            <label for="designation">DESIGNATION</label>
+            <input type="text" id="designation" name="designation" />
+          </div>
+          <div class="form-group">
+            <label for="department">DEPARTMENT UNIT</label>
+            <input type="text" id="department" name="department" />
+          </div>
+          <button type="submit" class="save-button" id="saveButton">
+            SAVE CHANGES
+          </button>
         </div>
-        <div class="form-group">
-          <label for="email">EMAIL ADDRESS</label>
-          <input type="email" id="email" name="email" />
-        </div>
-        <div class="form-group">
-          <label for="address">HOME ADDRESS</label>
-          <input type="text" id="address" name="address" />
-        </div>
-        <div class="form-group">
-          <label for="designation">DESIGNATION</label>
-          <input type="text" id="designation" name="designation" />
-        </div>
-        <div class="form-group">
-          <label for="department">DEPARTMENT UNIT</label>
-          <input type="text" id="department" name="department" />
-        </div>
-        <button type="submit" class="primary-button">SAVE CHANGES</button>
       </form>
     </div>
+
+    <style>
+      .back-button {
+        background-color: #6c757d;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 15px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background-color 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .back-button:hover {
+        background-color: #5a6268;
+      }
+
+      /* Loading states */
+      .loading-container {
+        text-align: center;
+        padding: 40px 20px;
+        color: #666;
+      }
+
+      .loading-spinner {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 2px solid #f3f3f3;
+        border-top: 2px solid #3498db;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-right: 10px;
+        vertical-align: middle;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .save-button:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+        opacity: 0.7;
+      }
+
+      .save-button:disabled:hover {
+        background-color: #ccc;
+      }
+    </style>
   </body>
 </html>

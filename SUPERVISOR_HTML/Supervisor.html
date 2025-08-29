@@ -29,20 +29,81 @@
     <!-- Sidebar placeholder that will be filled by the JavaScript -->
     <div id="sidebar-placeholder"></div>
 
-    <div class="main-content flex-center">
-      <div class="supervisor-container">
-        <div class="dashboard-title">SUPERVISOR DASHBOARD</div>
-        <div class="welcome-message">Welcome, Supervisor!</div>
+    <div class="main-content">
+      <!-- Dashboard Header -->
+      <div class="dashboard-header">
+        <div class="header-content">
+          <div class="welcome-section">
+            <h1>Welcome to Your Supervisor Dashboard</h1>
+            <p>Manage and oversee employee leave requests</p>
+          </div>
+          <div class="profile-section">
+            <button
+              class="profile-btn"
+              onclick="window.location.href='supervisor-profile-view.html'"
+              title="View Profile"
+            >
+              <span class="profile-icon">👤</span>
+              <span class="profile-text">Profile</span>
+            </button>
+          </div>
+        </div>
+      </div>
 
-        <div class="stats-container">
-          <div class="stat-card">
-            <div class="stat-number">5</div>
-            <div class="stat-label">Pending Leave Requests</div>
+      <!-- Dashboard Cards Container -->
+      <div class="dashboard-cards">
+        <!-- Leave Statistics Card -->
+        <div class="dashboard-card full-width">
+          <div class="card-header">
+            <h2>Leave Management Overview</h2>
           </div>
-          <div class="stat-card">
-            <div class="stat-number">12</div>
-            <div class="stat-label">Approved Leaves This Month</div>
+          <div class="card-content">
+            <div class="stats-grid">
+              <div class="stat-item">
+                <div class="stat-number" id="pending-requests">5</div>
+                <div class="stat-label">Pending Requests</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-number" id="approved-month">12</div>
+                <div class="stat-label">Approved This Month</div>
+              </div>
+              <!-- <div class="stat-item">
+                <div class="stat-number" id="team-members">8</div>
+                <div class="stat-label">Team Members</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-number" id="rejected-month">2</div>
+                <div class="stat-label">Rejected This Month</div>
+              </div> -->
+            </div>
           </div>
+        </div>
+      </div>
+
+      <!-- Supervisor Leave Balance Card -->
+      <div class="dashboard-card full-width">
+        <div class="card-header">
+          <h2>Leave Balance</h2>
+        </div>
+        <div class="card-content">
+          <table class="balance-table">
+            <thead>
+              <tr>
+                <th>LEAVE TYPE</th>
+                <th>AVAILABLE</th>
+                <th>USED</th>
+                <th>TOTAL</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="loading-row">
+                <td colspan="4" style="text-align: center; color: #666">
+                  <div class="loading-spinner"></div>
+                  Loading leave balance...
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -57,7 +118,330 @@
 
         // Load sidebar
         loadSidebar("supervisor");
+
+        // Load supervisor dashboard data
+        loadSupervisorDashboardData();
       });
+
+      // Function to load supervisor dashboard data
+      async function loadSupervisorDashboardData() {
+        try {
+          // Wait for Firebase Auth to be ready
+          firebase.auth().onAuthStateChanged(async (user) => {
+            if (user) {
+              const uid = user.uid;
+
+              // Get user document from Firestore (supervisors are also stored in employees collection)
+              const userDoc = await firebase
+                .firestore()
+                .collection("employees")
+                .doc(uid)
+                .get();
+
+              if (userDoc.exists) {
+                const userData = userDoc.data();
+                console.log("Supervisor dashboard data loaded:", userData);
+
+                // Update welcome message with user name
+                updateWelcomeMessage(userData.name || "Supervisor");
+
+                // Update leave balance table
+                updateLeaveBalanceTable(userData.leaveCredits || {});
+
+                // Load leave requests statistics
+                await loadLeaveStatistics();
+              } else {
+                console.log("No supervisor document found");
+              }
+            }
+          });
+        } catch (error) {
+          console.error("Error loading supervisor dashboard data:", error);
+        }
+      }
+
+      // Function to update welcome message
+      function updateWelcomeMessage(userName) {
+        const headerElement = document.querySelector(".welcome-section h1");
+        if (headerElement) {
+          headerElement.textContent = `Welcome, ${userName}!`;
+        }
+      }
+
+      // Function to update leave balance table
+      function updateLeaveBalanceTable(leaveCredits) {
+        const tableBody = document.querySelector(".balance-table tbody");
+        if (!tableBody) return;
+
+        // Clear existing rows
+        tableBody.innerHTML = "";
+
+        // Define the order and display names for leave types
+        const leaveTypeOrder = [
+          { key: "regularLeave", display: "Regular Leave" },
+          { key: "sickLeave", display: "Sick Leave" },
+          { key: "emergencyLeave", display: "Emergency Leave" },
+          { key: "serviceLeave", display: "Service Incentive Leave" },
+          { key: "specialLeave", display: "Special Privilege Leave" },
+          { key: "maternityLeave", display: "Maternity/Paternity Leave" },
+        ];
+
+        // Create rows for each leave type
+        leaveTypeOrder.forEach((leaveType) => {
+          const leaveData = leaveCredits[leaveType.key];
+          if (leaveData) {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+              <td>${leaveData.title || leaveType.display}</td>
+              <td class="available-days">${leaveData.remaining || 0}</td>
+              <td>${leaveData.used || 0}</td>
+              <td>${leaveData.days || 0}</td>
+            `;
+            tableBody.appendChild(row);
+          }
+        });
+
+        // If no leave credits found, show default message
+        if (Object.keys(leaveCredits).length === 0) {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td colspan="4" style="text-align: center; color: #666;">
+              No leave credit data available
+            </td>
+          `;
+          tableBody.appendChild(row);
+        }
+      }
+
+      // Function to load leave statistics
+      async function loadLeaveStatistics() {
+        try {
+          // This would typically fetch data from Firebase
+          // For now, we'll use placeholder data
+          const stats = {
+            pending: 5,
+            approved: 12,
+            teamMembers: 8,
+            rejected: 2,
+          };
+
+          // Update stat numbers
+          document.getElementById("pending-requests").textContent =
+            stats.pending;
+          document.getElementById("approved-month").textContent =
+            stats.approved;
+          document.getElementById("team-members").textContent =
+            stats.teamMembers;
+          document.getElementById("rejected-month").textContent =
+            stats.rejected;
+        } catch (error) {
+          console.error("Error loading leave statistics:", error);
+        }
+      }
     </script>
+
+    <style>
+      /* Dashboard-specific styles */
+      .dashboard-header {
+        margin-bottom: 30px;
+        background: linear-gradient(135deg, #c7ecee, #a3e4f3);
+        padding: 30px;
+        border-radius: 20px;
+        color: #2c3e50;
+      }
+
+      .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .welcome-section h1 {
+        margin: 0 0 10px 0;
+        font-size: 28px;
+        font-weight: bold;
+      }
+
+      .welcome-section p {
+        margin: 0;
+        font-size: 16px;
+        opacity: 0.8;
+      }
+
+      .profile-btn {
+        background-color: rgba(255, 255, 255, 0.2);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        color: #2c3e50;
+        padding: 12px 20px;
+        border-radius: 25px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        backdrop-filter: blur(10px);
+      }
+
+      .profile-btn:hover {
+        background-color: rgba(255, 255, 255, 0.3);
+        border-color: rgba(255, 255, 255, 0.5);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .profile-icon {
+        font-size: 20px;
+      }
+
+      .dashboard-cards {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 20px;
+        margin-bottom: 20px;
+      }
+
+      .dashboard-card {
+        background-color: rgba(255, 255, 255, 0.9);
+        border-radius: 20px;
+        padding: 20px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .dashboard-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      }
+
+      .dashboard-card.full-width {
+        grid-column: 1 / -1;
+      }
+
+      .card-header {
+        border-bottom: 2px solid #c7ecee;
+        padding-bottom: 15px;
+        margin-bottom: 20px;
+      }
+
+      .card-header h2 {
+        margin: 0;
+        color: #2c3e50;
+        font-size: 20px;
+      }
+
+      /* Stats grid for supervisor dashboard */
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+      }
+
+      .stat-item {
+        text-align: center;
+        padding: 20px;
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        border-radius: 15px;
+        transition: transform 0.3s ease;
+      }
+
+      .stat-item:hover {
+        transform: translateY(-3px);
+      }
+
+      .stat-number {
+        font-size: 32px;
+        font-weight: bold;
+        color: #2c3e50;
+        margin-bottom: 8px;
+      }
+
+      .stat-label {
+        font-size: 14px;
+        color: #7f8c8d;
+        text-transform: uppercase;
+        font-weight: 500;
+      }
+
+      /* Leave balance table styles */
+      .balance-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .balance-table th,
+      .balance-table td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #e0e0e0;
+      }
+
+      .balance-table th {
+        background-color: #f8f9fa;
+        font-weight: bold;
+        color: #2c3e50;
+      }
+
+      .available-days {
+        color: #27ae60;
+        font-weight: bold;
+      }
+
+      /* Loading spinner styles */
+      .loading-spinner {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 2px solid #f3f3f3;
+        border-top: 2px solid #3498db;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-right: 10px;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .loading-row {
+        opacity: 0.7;
+      }
+
+      /* Responsive design */
+      @media (max-width: 768px) {
+        .dashboard-cards {
+          grid-template-columns: 1fr;
+        }
+
+        .header-content {
+          flex-direction: column;
+          text-align: center;
+          gap: 20px;
+        }
+
+        .welcome-section h1 {
+          font-size: 24px;
+        }
+
+        .profile-btn {
+          padding: 10px 16px;
+          font-size: 14px;
+        }
+
+        .stats-grid {
+          grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        }
+
+        .stat-number {
+          font-size: 24px;
+        }
+      }
+    </style>
   </body>
 </html>
